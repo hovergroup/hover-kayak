@@ -1,0 +1,26 @@
+#include "Arduino.h"
+#include "configuration.h"
+class SBUS {
+public:
+  SBUS();
+int16_t channels[18];
+uint8_t  failsafe_status;
+  
+  boolean doWork();
+  
+private:
+uint8_t sbus_data[25];
+int sbus_passthrough;
+uint8_t byte_in_sbus;
+uint8_t bit_in_sbus;
+uint8_t ch;
+uint8_t bit_in_channel;
+uint8_t bit_in_servo;
+uint8_t inBuffer[25];
+int bufferIndex;
+uint8_t inData;
+int toChannels;
+
+  void update_channels();
+  void feedLine();
+};
