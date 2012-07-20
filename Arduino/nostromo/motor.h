@@ -18,6 +18,9 @@ public:
   void setAngle( int angle );
   
   void limitPWM( int percentage );
+  
+  int getCurrentPWM() { return current_percent; }
+  int getCurrentAngle() { return current_angle; }
 
 private:
   Sabertooth ST;
@@ -25,7 +28,7 @@ private:
   Servo azimuth_servo;
   unsigned long last_time;
   double current_percent;
-  int target_percent, limit_percent;
+  int target_percent, limit_percent, current_angle;
   boolean enabled;
   
   void outputPWM( int percent );
