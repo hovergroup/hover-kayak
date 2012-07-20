@@ -34,11 +34,11 @@ void setup() {
   delay(200);
 }
 
+int millivolts;
+
 void publishSensorReadings() {
-  int voltage_in = analogRead( voltageDividerPinNumber );
-  int voltage_measured = voltage_in * voltageDividerGain;
   char output[200]; 
-  sprintf( &output[0], "voltage=%d", voltage_measured );
+  sprintf( &output[0], "voltage=%d", millivolts );
   Serial1.println( output );
   Serial.println( output );
 }
@@ -50,6 +50,15 @@ boolean use_rc;
 
 void loop() {
   delay(1);
+  
+  millivolts = voltageDividerGain * analogRead( voltageDividerPinNumber );
+  
+  if ( millivolts < 11200 )
+    motor.limitPWM(20);
+  else if ( millivolts < 10600 )
+    motor.limitPWM(0);
+  else if ( millivolts > 11800 )
+    motor.limitPWM(100);
   
   gumstix.doWork();
   

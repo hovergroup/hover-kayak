@@ -5,10 +5,18 @@ Motor::Motor() {
   current_percent = 0;
   target_percent = 0;
   enabled = true;
+  limit_percent = 100;
+}
+
+void Motor::limitPWM( int percentage ) {
+  if ( percentage > 100 || percentage < 0 )
+    return;
+  limit_percent = percentage; 
+  target_percent = constrain(percentage, limit_percent, limit_percent);
 }
 
 boolean Motor::doWork() {
-  if ( digitalRead(thrusterEStopPin) )
+  if ( digitalRead(thrusterEStopPin) || limit_percent == 0 )
     enabled = true;
   else {
     enabled = false;
@@ -62,7 +70,7 @@ void Motor::outputPWM( int percent ) {
 }
 
 void Motor::setPWM( int percentage ) {
-  target_percent = constrain(percentage, -100, 100);
+  target_percent = constrain(percentage, -limit_percent, limit_percent);
   
 //  if ( abs(current_percent) > abs(target_percent) ) {
 //    current_percent = target_percent;
