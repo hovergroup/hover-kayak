@@ -16,7 +16,7 @@ void Motor::limitPWM( int percentage ) {
     return;
   // set limit and constrain current target
   limit_percent = percentage; 
-  target_percent = constrain(percentage, -limit_percent, limit_percent);
+  target_percent = constrain(target_percent, -limit_percent, limit_percent);
 }
 
 // iterate method
@@ -37,8 +37,7 @@ boolean Motor::doWork() {
  
   if ( current_percent != target_percent ) {
     // calculate a max change based on time elapsed
-    double max_deviation = (time_elapsed*thrusterSlewLimit/1000.0);
-    
+    double max_deviation = (time_elapsed*thrusterSlewLimit/1000.0); 
     
     if ( (abs(current_percent) < abs(target_percent)-max_deviation) || // less than the target
          (abs(current_percent) > abs(target_percent)+max_deviation) || // greater than the target

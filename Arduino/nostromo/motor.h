@@ -19,7 +19,7 @@ public:
   
   void limitPWM( int percentage );
   
-  int getCurrentPWM() { return (int) current_percent; }
+  int getCurrentPWM() { return ((int) current_percent); }
   int getCurrentAngle() { return current_angle; }
 
 private:
