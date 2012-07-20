@@ -45,7 +45,7 @@ boolean use_rc;
 
 void publishSensorReadings() {
   char output[200]; 
-  sprintf( &output[0], "voltage=%d,pwm=%d:angle=%d", 
+  sprintf( &output[0], "voltage=%d,pwm=%d,angle=%d", 
     millivolts, 
     motor.getCurrentPWM(),
     motor.getCurrentAngle());
