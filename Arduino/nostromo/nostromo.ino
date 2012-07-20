@@ -51,7 +51,8 @@ boolean use_rc;
 void loop() {
   delay(1);
   
-  millivolts = voltageDividerGain * analogRead( voltageDividerPinNumber );
+  int voltage_in = 
+  millivolts =  voltageDividerGain * analogRead( voltageDividerPinNumber );
   
   if ( millivolts < 11200 )
     motor.limitPWM(20);

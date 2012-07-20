@@ -12,7 +12,7 @@ void Motor::limitPWM( int percentage ) {
   if ( percentage > 100 || percentage < 0 )
     return;
   limit_percent = percentage; 
-  target_percent = constrain(percentage, limit_percent, limit_percent);
+  target_percent = constrain(percentage, -limit_percent, limit_percent);
 }
 
 boolean Motor::doWork() {
