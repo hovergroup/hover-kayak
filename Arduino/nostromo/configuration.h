@@ -1,32 +1,25 @@
 
+// 0-1023 (analogRead) -> v_batt
+#define voltageDividerGain 23
 
-#define SBUS_SIGNAL_OK          0x00
-#define SBUS_SIGNAL_LOST        0x01
-#define SBUS_SIGNAL_FAILSAFE    0x03
-
+// pin configuration
 #define mainBattery5vRelayPin 56
 #define mainBattery12vRelayPin 55
 #define servoPowerRelayPin 57
-
-#define voltageDividerGain 23
 #define voltageDividerPinNumber 4
-
-#define gyroAnalogPin 8
-#define temperatureAnalogPin 7
-#define humidityAnalogPin 6
-
-#define compassOffset 0
-
 #define azimuthServoPinNumber A0
-#define azimuthCenter 1462
-#define azimuth60Range 587
-//#define azimuthLeft60 875
-//#define azimuthRight60 2050
-
-#define thrusterAddress 128
 #define thrusterEStopPin 7
 
-#define thrusterSlewLimit 100 // percent per second
-#define degreesPerMicrosecond 0.15
+// these two values align the servo
+#define azimuthCenter 1462
+#define azimuth60Range 587
 
-#define minimumVoltage 12.4
+#define thrusterAddress 128
+
+// percent per second
+#define thrusterSlewLimit 100
+
+// thrust limiting when turning
+#define limitStartAngle 30 // angle past which limiting should start
+#define limitOffset 0 // ammount shich should be limited at start angle
+#define limitSlope 2 // additional percent limited per degree past start angle

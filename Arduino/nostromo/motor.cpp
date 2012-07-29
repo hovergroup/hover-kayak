@@ -4,7 +4,6 @@ Motor::Motor() {
   last_time = 0;
   current_percent = 0;
   target_percent = 0;
-  enabled = true;
   limit_percent = 100;
   current_angle = 0;
 }
@@ -22,19 +21,20 @@ void Motor::limitPWM( int percentage ) {
 // iterate method
 boolean Motor::doWork() {
   // check status of estop
-  if ( digitalRead(thrusterEStopPin) || limit_percent == 0 )
-    enabled = true;
-  else {
+  if ( !digitalRead(thrusterEStopPin) ) {
     // immediate stop
-    enabled = false;
-    target_percent = 0;
-    current_percent = 0;
+    snapToZero();
+    // update this to avoid sudden start when e-stop released
+    last_time = millis();
+    // return not enabled
+    return false;
   }
   
   // time elapsed since last iteration
   unsigned long time_elapsed = millis() - last_time;
   last_time = millis();
  
+  // slew rate implemenation
   if ( current_percent != target_percent ) {
     // calculate a max change based on time elapsed
     double max_deviation = (time_elapsed*thrusterSlewLimit/1000.0); 
@@ -49,10 +49,13 @@ boolean Motor::doWork() {
         current_percent -= max_deviation; // decrease thrust
     } else
       current_percent = target_percent; // close, snap to target
-    
   }
   outputPWM( (int) current_percent ); // output new percent
-  return enabled;
+  
+  if ( limit_percent == 0 )
+    return false; // return not enabled for servo shutoff
+  else
+    return true; // return enabled
 }
 
 void Motor::initialize() {    
@@ -69,23 +72,33 @@ void Motor::initialize() {
 
 // send a pwm to motor
 void Motor::outputPWM( int percent ) {
-  if ( enabled ) {
-    // map percentage f enabled
-    int output = map( percent, -100, 100, -127, 127 );
-    ST.motor(1,output);
-    
-  } else {
-    ST.motor(1,0);
+  // constrain to appropriate range
+  percent = constrain(percent, -100, 100);
+  // apply turn limiting
+  percent = turnLimit( percent );
+  
+  // map into output range and send
+  int output = map( percent, -100, 100, -127, 127 );
+  ST.motor(1,output);
+  current_output = percent;
+}
+
+int Motor::turnLimit( int percent ) {
+  if ( abs(current_angle) >= limitStartAngle ) {
+    int turn_limit = (abs(current_angle)-limitStartAngle)*limitSlope + limitOffset;
+    return constrain( percent, -turn_limit, turn_limit );
   }
+}
+
+void Motor::snapToZero() {
+  target_percent = 0;
+  current_percent = 0;
+  ST.motor(1,0);
+  current_output = 0;
 }
 
 void Motor::setPWM( int percentage ) {
   target_percent = constrain(percentage, -limit_percent, limit_percent);
-  
-//  if ( abs(current_percent) > abs(target_percent) ) {
-//    current_percent = target_percent;
-//    outputPWM( target_percent );
-//  }
 }
 
 void Motor::setAngle( int angle ) {
