@@ -87,6 +87,8 @@ int Motor::turnLimit( int percent ) {
   if ( abs(current_angle) >= limitStartAngle ) {
     int turn_limit = (abs(current_angle)-limitStartAngle)*limitSlope + limitOffset;
     return constrain( percent, -turn_limit, turn_limit );
+  } else {
+    return percent;
   }
 }
 
