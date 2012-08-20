@@ -10,6 +10,8 @@ public:
   
   boolean doWork();
   
+  void initialize();
+  
   // runtime commands
   void setEmergencyStop();
   void resetEmergencyStop();
@@ -21,6 +23,9 @@ public:
   float readMotorAmps();
   float readBatteryAmps();
   boolean readSingleDigitalInput( int input_number );
+  
+  float getBatteryVoltage() { return battery_voltage; }
+  int getHeatsinkTemp() { return heatsink_temp; }
   
   boolean getOverheatFault() { return overheat; }
   boolean getOvervoltageFault() { return overvoltage; }
@@ -44,7 +49,7 @@ public:
 private:
   Stream& _port;
   static const unsigned int ROBOTEQ_TIMEOUT = 50; // timeout in ms when reading line
-  static const unsigned int ROBOTEQ_READ_UPDATE = 25;
+  static const unsigned int ROBOTEQ_READ_UPDATE = 500;
   unsigned long last_read_time;
   int read_state;
   
@@ -58,14 +63,21 @@ private:
   int internal_temp, heatsink_temp;
   float internal_voltage, battery_voltage, five_voltage;
   
-  char buffer [100];
+  char buffer[100];
+  int buffer_index;
   int readLine();
+  
+  void readBuffer();
+  int processBuffer();
+  int findLine( int index );
+  void shiftBuffer( int shift );
+  
+  void parseVoltage( int index, int stopIndex );
+  void parseTemperature( int index, int stopIndex );
   
   // runtime updates
   boolean updateFaultFlags();
   boolean updateStatusFlags();
-  boolean updateTemperature();
-  boolean updateVoltage();
 };
 
 #endif

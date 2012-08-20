@@ -1,25 +1,146 @@
 #include "roboteq.h"
 
+void Roboteq::initialize() {
+  pinMode(7,OUTPUT);
+  digitalWrite(7,HIGH);
+  delay(1000);
+}
+
 boolean Roboteq::doWork() { 
   if ( millis()-last_read_time > ROBOTEQ_READ_UPDATE ) {
     last_read_time = millis();
     switch ( read_state ) {
     case 0:
-      updateFaultFlags();
+      _port.println("?V");
       read_state++;
       break;
     case 1:
-      updateStatusFlags();
-      read_state++;
-      break;
-    case 2:
-      updateTemperature();
-      read_state++;
-      break;
-    case 3:
-      updateVoltage();
+      _port.println("?T");
       read_state=0;
       break;
+    }
+  }
+  
+  readBuffer();
+  shiftBuffer( processBuffer() );
+}
+
+void Roboteq::shiftBuffer( int shift ) {
+  if ( shift==0 || buffer_index==0 ) return;
+  for ( int i=shift; i<buffer_index; i++ ) {
+    buffer[i-shift] = buffer[i];
+  }
+  buffer_index-=shift;
+}
+
+void Roboteq::readBuffer() {
+  while ( _port.available()!=0 ) {
+    buffer[buffer_index]=_port.read();
+    buffer_index++;
+  }
+}
+
+int Roboteq::processBuffer() {
+  int bytesUsed, stopIndex;
+  for ( bytesUsed=0; bytesUsed<buffer_index-1; bytesUsed++ ) {
+    switch ( buffer[bytesUsed] ) {
+      case 'V':
+        stopIndex = findLine(bytesUsed);
+        if ( stopIndex != -1 ) {
+          parseVoltage( bytesUsed, stopIndex );
+          bytesUsed = stopIndex;
+        } else {
+          return bytesUsed;
+        }
+        break;
+      case 'T':
+        stopIndex = findLine(bytesUsed);
+        if ( stopIndex != -1 ) {
+          parseTemperature( bytesUsed, stopIndex );
+          bytesUsed = stopIndex;
+        } else {
+          return bytesUsed;
+        }
+        break;
+    }
+  }
+  return bytesUsed;
+}
+
+int Roboteq::findLine(int index) {
+  for ( int i=index; i<buffer_index; i++ ) {
+    if ( buffer[i]=='\r' )
+      return i;
+  }
+  return -1;
+}
+
+void Roboteq::parseTemperature( int index, int stopIndex ) {
+  if ( buffer[index]=='T' && buffer[index+1]=='=' ) {
+    char mybuf[10];
+    int buffix = 0;
+    int state = 0;
+    // state 0, getting internal temp
+    // state 1, found :
+    // state 2, getting heatsink temp
+    for ( int i=index+2; i<stopIndex; i++ ) {
+      switch( buffer[i] ) {
+      case ':':
+        mybuf[buffix]=0x00;
+        state++;
+        break;
+      default:
+        mybuf[buffix]=buffer[i];
+        buffix++;
+      }
+      if ( state==1 ) {
+        internal_temp = atoi(mybuf);
+        state++;
+        buffix=0;
+      }
+    }
+    mybuf[buffix]=0x00;
+    heatsink_temp = atoi(mybuf);
+  }
+}
+
+void Roboteq::parseVoltage( int index, int stopIndex ) {
+  if ( buffer[index]=='V' && buffer[index+1]=='=' ) {
+    char mybuf[10];
+    int buffix = 0;
+    int state = 0;
+    // state 0 - getting internal voltage
+    // state 1 - got first :
+    // state 2 - getting battery voltage
+    // state 3 - got second :
+    // state 4 - getting 5v supply voltage
+    int i;
+    for ( i=index+2; i<stopIndex; i++ ) {
+      switch( buffer[i] ) {
+      case ':':
+        mybuf[buffix]=0x00;
+        state++;
+        break;
+      default:
+        mybuf[buffix]=buffer[i];
+        buffix++;
+      }
+      switch ( state ) {
+      case 1:
+        internal_voltage = atoi(mybuf)/10.0;
+        state++;
+        buffix=0;
+        break; 
+      case 3:
+        battery_voltage = atoi(mybuf)/10.0;
+        state++;
+        buffix=0;
+        break;
+      default:
+        break;
+      }
+      mybuf[buffix]=0x00;
+      five_voltage = atoi(mybuf)/1000.0;
     }
   }
 }
@@ -29,6 +150,7 @@ Roboteq::Roboteq(Stream& port) : _port(port)
   _port.setTimeout(ROBOTEQ_TIMEOUT);
   last_read_time = 0;
   read_state = 0;
+  buffer_index=0;
 }
 
 // turn on emergency stop
@@ -43,23 +165,23 @@ void Roboteq::resetEmergencyStop() {
 
 // set output speed, limits determined by max rpm config
 void Roboteq::setOutput( int output ) { // -1000 to 1000
-  char buffer [10];
-  sprintf(buffer, "!G %d", output);
-  _port.println(buffer);
+  char writebuf [10];
+  sprintf(writebuf, "!G %d", output);
+  _port.println(writebuf);
 }
 
 // set maximum acceleration in output/sec
 void Roboteq::setAccleration( int acceleration ) {
-  char buffer [15];
-  sprintf(buffer, "!AC 1 %d", acceleration);
-  _port.println(buffer);
+  char writebuf [15];
+  sprintf(writebuf, "!AC 1 %d", acceleration);
+  _port.println(writebuf);
 }
 
 // set maximum deceleration in output/sec
 void Roboteq::setDeceleration( int deceleration ) {
-  char buffer [15];
-  sprintf(buffer, "!DS 1 %d", deceleration);
-  _port.println(buffer);
+  char writebuf [15];
+  sprintf(writebuf, "!DS 1 %d", deceleration);
+  _port.println(writebuf);
 }
 
 // read motor current
@@ -84,9 +206,9 @@ float Roboteq::readBatteryAmps() {
 
 // read a single digital input line
 boolean Roboteq::readSingleDigitalInput( int input_number ) {
-  char buffer[10];
-  sprintf(buffer,"?DI %d", input_number);
-  _port.println(buffer);
+  char writebuf[10];
+  sprintf(writebuf,"?DI %d", input_number);
+  _port.println(writebuf);
   
   int bytesRead = readLine();
   if ( bytesRead == 0 ) return -1;
@@ -136,91 +258,9 @@ boolean Roboteq::updateStatusFlags() {
   } else return false;
 }
 
-// read temperatures
-boolean Roboteq::updateTemperature() {
-  _port.println("?T");
-  
-  int bytesRead = readLine();
-  if ( bytesRead == 0 ) return false;
-  else if ( buffer[0]=='T' && buffer[1]=='=' ) {
-    char mybuf[10];
-    int buffix = 0;
-    int state = 0;
-    // state 0, getting internal temp
-    // state 1, found :
-    // state 2, getting heatsink temp
-    for ( int i=2; i<bytesRead; i++ ) {
-      switch( buffer[i] ) {
-      case ':':
-        mybuf[buffix]=0x00;
-        state++;
-        break;
-      default:
-        mybuf[buffix]=buffer[i];
-        buffix++;
-      }
-      if ( state==1 ) {
-        internal_temp = atoi(mybuf);
-        state++;
-        buffix=0;
-      }
-    }
-    mybuf[buffix]=0x00;
-    heatsink_temp = atoi(mybuf);
-    return true;
-  }
-  return false;
-}
-
-boolean Roboteq::updateVoltage() {
-  _port.println("?V");
-  
-  int bytesRead = readLine();
-  if ( bytesRead == 0 ) return false;
-  else if ( buffer[0]=='T' && buffer[1]=='=' ) {
-    char mybuf[10];
-    int buffix = 0;
-    int state = 0;
-    // state 0 - getting internal voltage
-    // state 1 - got first :
-    // state 2 - getting battery voltage
-    // state 3 - got second :
-    // state 4 - getting 5v supply voltage
-    for ( int i=2; i<bytesRead; i++ ) {
-      switch( buffer[i] ) {
-      case ':':
-        mybuf[buffix]=0x00;
-        state++;
-        break;
-      default:
-        mybuf[buffix]=buffer[i];
-        buffix++;
-      }
-      switch ( state ) {
-      case 1:
-        internal_voltage = atoi(mybuf)/10.0;
-        state++;
-        buffix=0;
-        break; 
-      case 3:
-        battery_voltage = atoi(mybuf)/10.0;
-        state++;
-        buffix=0;
-        break;
-      default:
-        break;
-      }
-    }
-    mybuf[buffix]=0x00;
-    five_voltage = atoi(mybuf)/1000.0;
-    return true;
-  }
-  return false;
-}
-
 // read a single line
 int Roboteq::readLine() {
-  _port.readBytesUntil( '\r', &buffer[0], 100 );
+  return _port.readBytesUntil( '\r', &buffer[0], 100 );
 }
 
 char* Roboteq::getFaultSummary() {
