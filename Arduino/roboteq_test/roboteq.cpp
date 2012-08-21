@@ -19,6 +19,7 @@ boolean Roboteq::doWork() {
       read_state=0;
       break;
     }
+    sendSpeed( current_velocity );
   }
   
   readBuffer();
@@ -75,73 +76,29 @@ int Roboteq::findLine(int index) {
   return -1;
 }
 
+void Roboteq::setPower( int velocity ) {
+  current_velocity = constrain(velocity,-1000,1000);
+}
+
+void Roboteq::sendSpeed( int velocity ) {
+  char mybuf[10];
+  sprintf(mybuf,"!G %d",velocity);
+  Serial3.println(mybuf);
+}
+
 void Roboteq::parseTemperature( int index, int stopIndex ) {
   if ( buffer[index]=='T' && buffer[index+1]=='=' ) {
-    char mybuf[10];
-    int buffix = 0;
-    int state = 0;
-    // state 0, getting internal temp
-    // state 1, found :
-    // state 2, getting heatsink temp
-    for ( int i=index+2; i<stopIndex; i++ ) {
-      switch( buffer[i] ) {
-      case ':':
-        mybuf[buffix]=0x00;
-        state++;
-        break;
-      default:
-        mybuf[buffix]=buffer[i];
-        buffix++;
-      }
-      if ( state==1 ) {
-        internal_temp = atoi(mybuf);
-        state++;
-        buffix=0;
-      }
-    }
-    mybuf[buffix]=0x00;
-    heatsink_temp = atoi(mybuf);
+    sscanf( &buffer[index], "T=%d:%d", &internal_temp, &heatsink_temp );
   }
 }
 
 void Roboteq::parseVoltage( int index, int stopIndex ) {
   if ( buffer[index]=='V' && buffer[index+1]=='=' ) {
-    char mybuf[10];
-    int buffix = 0;
-    int state = 0;
-    // state 0 - getting internal voltage
-    // state 1 - got first :
-    // state 2 - getting battery voltage
-    // state 3 - got second :
-    // state 4 - getting 5v supply voltage
-    int i;
-    for ( i=index+2; i<stopIndex; i++ ) {
-      switch( buffer[i] ) {
-      case ':':
-        mybuf[buffix]=0x00;
-        state++;
-        break;
-      default:
-        mybuf[buffix]=buffer[i];
-        buffix++;
-      }
-      switch ( state ) {
-      case 1:
-        internal_voltage = atoi(mybuf)/10.0;
-        state++;
-        buffix=0;
-        break; 
-      case 3:
-        battery_voltage = atoi(mybuf)/10.0;
-        state++;
-        buffix=0;
-        break;
-      default:
-        break;
-      }
-      mybuf[buffix]=0x00;
-      five_voltage = atoi(mybuf)/1000.0;
-    }
+    int v1, v2, v3;
+    sscanf( &buffer[index], "V=%d:%d:%d", &v1, &v2, &v3 );
+    internal_voltage = v1/10.0;
+    battery_voltage = v2/10.0;
+    five_voltage = v3/1000.0;
   }
 }
 
@@ -152,6 +109,21 @@ Roboteq::Roboteq(Stream& port) : _port(port)
   read_state = 0;
   buffer_index=0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // turn on emergency stop
 void Roboteq::setEmergencyStop() {

@@ -46,12 +46,16 @@ public:
   boolean getScriptRunningStatus() { return script_running; }
   char* getStatusSummary();
   
+  void setPower( int velocity );
+  
 private:
   Stream& _port;
   static const unsigned int ROBOTEQ_TIMEOUT = 50; // timeout in ms when reading line
-  static const unsigned int ROBOTEQ_READ_UPDATE = 500;
+  static const unsigned int ROBOTEQ_READ_UPDATE = 50;
   unsigned long last_read_time;
   int read_state;
+  
+  int current_velocity;
   
   char summary_string [200];
   
@@ -74,6 +78,8 @@ private:
   
   void parseVoltage( int index, int stopIndex );
   void parseTemperature( int index, int stopIndex );
+  
+  void sendSpeed( int velocity );
   
   // runtime updates
   boolean updateFaultFlags();
