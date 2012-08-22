@@ -16,7 +16,7 @@ GUMSTIX_SERIAL gumstix = GUMSTIX_SERIAL();
 void setup() {
   Wire.begin();
   
-  // turn on the battery
+  // turn on the regulators
   pinMode(mainBattery5vRelayPin, OUTPUT);
   digitalWrite(mainBattery5vRelayPin, HIGH);
   pinMode(mainBattery12vRelayPin, OUTPUT);
