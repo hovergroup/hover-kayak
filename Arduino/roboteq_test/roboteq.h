@@ -9,23 +9,16 @@ public:
   Roboteq(Stream& port);
   
   boolean doWork();
-  
   void initialize();
   
-  // runtime commands
-  void setEmergencyStop();
-  void resetEmergencyStop();
-  void setOutput( int output );
-  void setAccleration( int acceleration );
-  void setDeceleration( int deceleration );
-  
-  // runtime queries
-  float readMotorAmps();
-  float readBatteryAmps();
-  boolean readSingleDigitalInput( int input_number );
+  void setPower( int velocity );
   
   float getBatteryVoltage() { return battery_voltage; }
   int getHeatsinkTemp() { return heatsink_temp; }
+  float getMotorAmps() { return motor_amps; };
+  float getBatteryAmps() { return battery_amps; }
+  boolean getStopSwitch() { return stop_switch; }
+  int getPowerOutput() { return power_output; }
   
   boolean getOverheatFault() { return overheat; }
   boolean getOvervoltageFault() { return overvoltage; }
@@ -46,8 +39,6 @@ public:
   boolean getScriptRunningStatus() { return script_running; }
   char* getStatusSummary();
   
-  void setPower( int velocity );
-  
 private:
   Stream& _port;
   static const unsigned int ROBOTEQ_TIMEOUT = 50; // timeout in ms when reading line
@@ -64,8 +55,10 @@ private:
     startup_configuration_fault;
   boolean serial_mode, pulse_mode, analog_mode, power_stage_off, 
     stall_detected, at_limit, script_running;
-  int internal_temp, heatsink_temp;
-  float internal_voltage, battery_voltage, five_voltage;
+    
+  int internal_temp, heatsink_temp, power_output;
+  float internal_voltage, battery_voltage, five_voltage, motor_amps, battery_amps;
+  boolean stop_switch;
   
   char buffer[100];
   int buffer_index;
@@ -78,6 +71,10 @@ private:
   
   void parseVoltage( int index, int stopIndex );
   void parseTemperature( int index, int stopIndex );
+  void parseMotorAmps( int index, int stopIndex );
+  void parseBatteryAmps( int index, int stopIndex );
+  void parseStopSwitch( int index, int stopIndex );
+  void parsePowerOutput( int index, int stopIndex );
   
   void sendSpeed( int velocity );
   

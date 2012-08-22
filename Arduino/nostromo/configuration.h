@@ -14,12 +14,7 @@
 #define azimuthCenter 1462
 #define azimuth60Range 587
 
-#define thrusterAddress 128
-
-// percent per second
-#define thrusterSlewLimit 100
-
 // thrust limiting when turning
 #define limitStartAngle 30 // angle past which limiting should start
 #define limitOffset 0 // ammount shich should be limited at start angle
-#define limitSlope 2 // additional percent limited per degree past start angle
+#define limitSlope 20 // additional percent limited per degree past start angle

@@ -7,13 +7,15 @@
 
 class SBUS {
 public:
-  SBUS();
+  SBUS(Stream& port);
 int16_t channels[18];
 uint8_t  failsafe_status;
   
   boolean doWork();
   
 private:
+Stream& _port;
+
 uint8_t sbus_data[25];
 int sbus_passthrough;
 uint8_t byte_in_sbus;

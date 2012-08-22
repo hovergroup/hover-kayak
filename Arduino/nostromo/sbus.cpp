@@ -1,6 +1,6 @@
 #include "sbus.h"
 
-SBUS::SBUS() {
+SBUS::SBUS(Stream& port) : _port( port ) {
   uint8_t temp_sbus_data[25] = { 0x0f,0x01,0x04,0x20,0x00,0xff,0x07,0x40,0x00,0x02,0x10,
     0x80,0x2c,0x64,0x21,0x0b,0x59,0x08,0x40,0x00,0x02,0x10,0x80,0x00,0x00};
   memcpy(&temp_sbus_data[0], &sbus_data[0], 25);
@@ -24,8 +24,8 @@ boolean SBUS::doWork() {
 }
 
 void SBUS::feedLine(){
-  while(Serial2.available()){
-    inData = Serial2.read();
+  while(_port.available()){
+    inData = _port.read();
     if (inData == 0x0f){
       bufferIndex = 0;
       inBuffer[bufferIndex] = inData;
