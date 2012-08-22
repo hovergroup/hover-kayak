@@ -57,6 +57,11 @@ const int publishPeriod = 100; // how often we upload data
 unsigned long last_time2 = 0;
 boolean use_rc;
 
+void publishActuators() {
+  char message[100];
+  sprintf( &message[0]
+}
+
 //void publishSensorReadings() {
 //  char output[200]; 
 //  sprintf( &output[0], "voltage=%d,pwm=%d,angle=%d", 
