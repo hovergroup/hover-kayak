@@ -58,14 +58,14 @@ void publishVoltages() {
   char message[20];
   sprintf( &message[0], "?V=%d", (int) (roboteq.getBatteryVoltage()*10.0) );
   Serial1.println(message);
-  Serial.println(message);  
+//  Serial.println(message);  
 }
 
 void publishActuators() {
   char message[20];
   sprintf( &message[0], "?M=%d,%d", roboteq.getPowerOutput(), azimuth.getCurrentAngle() );
   Serial1.println(message);
-  Serial.println(message);  
+//  Serial.println(message);  
 }
 
 void publishCurrents() {
@@ -74,7 +74,7 @@ void publishCurrents() {
     (int) (roboteq.getBatteryAmps()*10.0), 
     (int) (roboteq.getMotorAmps()*10.0) );
   Serial1.println(message);
-  Serial.println(message);  
+//  Serial.println(message);  
 }
 
 void publishTemps() {
@@ -84,7 +84,7 @@ void publishTemps() {
     roboteq.getHeatsinkTemp(), 
     roboteq.getInternalTemp() );
   Serial1.println(message);
-  Serial.println(message);  
+//  Serial.println(message);  
 }
 
 int thrust_limit = 1000;

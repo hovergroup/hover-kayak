@@ -20,11 +20,17 @@ void GUMSTIX_SERIAL::readBuffer() {
     buffer[buffer_index]=_port.read();
     buffer_index++;
   }
+//  for ( int i=0; i<buffer_index; i++ ) {
+//    Serial.print(buffer[i]);
+//  }
+//  if ( buffer_index!=0 ) {
+//  Serial.println();
+//  }
 }
 
 int GUMSTIX_SERIAL::findLine(int index) {
   for ( int i=index; i<buffer_index; i++ ) {
-    if ( buffer[i]=='\r' )
+    if ( buffer[i]=='#' )
       return i;
   }
   return -1;
@@ -67,7 +73,7 @@ int GUMSTIX_SERIAL::processBuffer() {
       if ( stopIndex == -1 ) return bytesUsed;
     }
     switch ( buffer[bytesUsed] ) {
-      case 'V':
+      case 'M':
         parseMotorCommand( bytesUsed, stopIndex );
         bytesUsed = stopIndex;
         break;
@@ -78,8 +84,17 @@ int GUMSTIX_SERIAL::processBuffer() {
 }
 
 void GUMSTIX_SERIAL::parseMotorCommand( int index, int stopIndex ) {
+//  for ( int i=index; i<=stopIndex; i++ ) {
+//    Serial.print(buffer[i]);
+//  }
+//  return;
+  
   if ( buffer[index]=='M' && buffer[index+1]=='=' ) {
-    sscanf( &buffer[index], "M=%d,%d", thrust, rudder );
+    sscanf( &buffer[index], "M=%d,%d", &thrust, &rudder );
+//    Serial.print("parsed ");
+//    Serial.print(thrust);
+//    Serial.print(" ");
+//    Serial.println(rudder);
     last_command_time = millis();
   } else {
     Serial.println("bad parse");
