@@ -6,11 +6,13 @@
 #include "roboteq.h"
 #include "azimuth.h"
 #include "gumstix_serial.h"
+#include "TMP102.h"
 
 Roboteq roboteq = Roboteq( Serial2 );
 Azimuth azimuth = Azimuth();
 SBUS sbus = SBUS(Serial3);
-GUMSTIX_SERIAL gumstix = GUMSTIX_SERIAL();
+GUMSTIX_SERIAL gumstix = GUMSTIX_SERIAL(Serial1);
+TMP102 temp = TMP102();
 
 
 void setup() {
@@ -52,25 +54,29 @@ void setup() {
   Serial.println("ready");
 }
 
-float battery_voltage = 0;
-const int publishPeriod = 100; // how often we upload data
-unsigned long last_time2 = 0;
-boolean use_rc;
-
-void publishActuators() {
-  char message[100];
-  sprintf( &message[0]
+void publishVoltages() {
+  char message[20];
+  sprintf( &message[0], "?V=%f", roboteq.getBatteryVoltage() );
+  Serial1.println(message);  
 }
 
-//void publishSensorReadings() {
-//  char output[200]; 
-//  sprintf( &output[0], "voltage=%d,pwm=%d,angle=%d", 
-//    millivolts, 
-//    motor.getCurrentPWM(),
-//    motor.getCurrentAngle());
-//  Serial1.println( output );
-//  Serial.println( output );
-//}
+void publishActuators() {
+  char message[20];
+  sprintf( &message[0], "?M=%d,%d", roboteq.getPowerOutput(), azimuth.getCurrentAngle() );
+  Serial1.println(message);
+}
+
+void publishCurrents() {
+  char message[20];
+  sprintf( &message[0], "?C=%f,%f", roboteq.getBatteryAmps(), roboteq.getMotorAmps() );
+  Serial1.println(message);
+}
+
+void publishTemps() {
+  char message[20];
+  sprintf( &message[0], "?T=%f,%d,%d", temp.getTemp(), roboteq.getHeatsinkTemp(), roboteq.getInternalTemp() );
+  Serial1.println(message);
+}
 
 int thrust_limit = 1000;
 
@@ -84,24 +90,30 @@ void setThrust( int thrust ) {
   roboteq.setPower(thrust);
 }
 
+const int actuator_publish_period = 50;
+const int general_publish_period = 500;
+unsigned long actuator_publish_time=0, general_publish_time=0, last_command_fetch=0;
+boolean use_rc;
+
 void loop() {
   
-  // check battery voltage
-//  millivolts = voltageDividerGain * analogRead( voltageDividerPinNumber );
-  
-  // limit motor speed based on battery voltage
-//  if ( millivolts < 11200 )
-//    motor.limitPWM(20);
-//  else if ( millivolts < 10600 )
-//    motor.limitPWM(0);
-//  else if ( millivolts > 11800 )
-//    motor.limitPWM(100);
+  if ( millis()-actuator_publish_time > actuator_publish_period ) {
+    publishActuators();
+    actuator_publish_time = millis();
+  }
+  if ( millis()-general_publish_time > general_publish_period ) {
+    temp.updateReading();
+    publishVoltages();
+    publishCurrents();
+    publishTemps();
+    general_publish_time = millis();
+  }
   
   // comms iterate
   gumstix.doWork();
   roboteq.doWork();
   
-  battery_voltage = roboteq.getBatteryVoltage();
+  float battery_voltage = roboteq.getBatteryVoltage();
   if ( battery_voltage < 11.2 )
     thrust_limit = 200;
   else if ( battery_voltage < 10.6 )
@@ -140,16 +152,13 @@ void loop() {
     }
   } else {
     // get commands from gumstix serial
-    if ( gumstix.new_motor_command ) {
-      gumstix.new_motor_command = false;
-      setThrust(gumstix.motor_thrust);
-      azimuth.setAngle(gumstix.motor_rudder);
-    }
-    // if haven't received command recently, stop
-    if ( millis() - gumstix.last_motor_command_time > 1000 ) {
+    if ( gumstix.getLastCommandTime() != last_command_fetch ) {
+      last_command_fetch = gumstix.getLastCommandTime();
+      setThrust( gumstix.getThrustCommand() );
+      azimuth.setAngle( gumstix.getRudderCommand() );
+    } else if ( millis() - gumstix.getLastCommandTime() > 1000 ) {
       setThrust(0);
       azimuth.setAngle(0);
-//      Serial.println("Motor command timeout.");
     }
   }
     
@@ -158,11 +167,4 @@ void loop() {
     digitalWrite(servoPowerRelayPin, LOW);
   else
     digitalWrite(servoPowerRelayPin, HIGH);
-  
-  // publish sensor readings
-//  if ( millis() - last_time2 > publishPeriod ) {
-//    publishSensorReadings();
-//    last_time2 = millis(); 
-//  }
-  
 }

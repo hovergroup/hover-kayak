@@ -5,24 +5,30 @@
 
 class GUMSTIX_SERIAL {
 public:
-  GUMSTIX_SERIAL();
+  GUMSTIX_SERIAL(Stream& port);
   void doWork();
   void initialize();
   
-  int motor_thrust, motor_rudder;
-  boolean new_motor_command, compass_calibration_signal;
-  unsigned long last_motor_command_time;
+  int getRudderCommand() { return rudder; }
+  int getThrustCommand() { return thrust; }
+  unsigned long getLastCommandTime() { return last_command_time; }
   
 private:
+  Stream& _port;
   static const int shortestCompletePacket = 20;
   
-  char buffer[256];
-  int index, last_integer_end;
+  int thrust, rudder;
+  unsigned long last_command_time;
+  
+  char buffer[100];
+  int buffer_index;
   
   void readBuffer();
-  void parseBuffer();
-  void parseMotorCommand(int startIndex);
-  int parseNext();
+  int processBuffer();
+  int findLine( int index );
+  void shiftBuffer( int shift );
+  
+  void parseMotorCommand( int index, int stopIndex );
 };
 
 #endif

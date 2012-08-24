@@ -13,11 +13,16 @@ public:
   
   void setPower( int velocity );
   
-  float getBatteryVoltage() { return battery_voltage; }
   int getHeatsinkTemp() { return heatsink_temp; }
+  int getInternalTemp() { return internal_temp; }
+  
+  float getBatteryVoltage() { return battery_voltage; }
+  
   float getMotorAmps() { return motor_amps; };
   float getBatteryAmps() { return battery_amps; }
+  
   boolean getStopSwitch() { return stop_switch; }
+  
   int getPowerOutput() { return power_output; }
   
 private:
@@ -34,7 +39,6 @@ private:
   
   char buffer[100];
   int buffer_index;
-  int readLine();
   
   void readBuffer();
   int processBuffer();

@@ -1,83 +1,88 @@
 #include "gumstix_serial.h"
 
-GUMSTIX_SERIAL::GUMSTIX_SERIAL() {
-  index = 0; 
-  new_motor_command = false;
-  compass_calibration_signal = false;
-  motor_thrust = 0;
-  motor_rudder = 0;
-  last_motor_command_time = 0;
+GUMSTIX_SERIAL::GUMSTIX_SERIAL(Stream& port) : _port(port)
+{
+  thrust = 0;
+  rudder = 0;
+  last_command_time = 0;
 }
 
-void GUMSTIX_SERIAL::initialize() {
-  Serial1.begin(115200);
-}
+void GUMSTIX_SERIAL::initialize() {}
 
 void GUMSTIX_SERIAL::doWork() {
   // get new data from the serial port
   readBuffer();
+  shiftBuffer( processBuffer() );
 }
 
 void GUMSTIX_SERIAL::readBuffer() {
-  while ( Serial1.available() ) {
-    buffer[index] = Serial1.read();
-    Serial.print(buffer[index]);
-    
-    if ( buffer[index] == '\n' ) {
-//      Serial.println("parsing");
-      if ( index >= 3 )
-        parseBuffer();
-      index = 0;
-    } else
-      index++;
+  while ( _port.available()!=0 ) {
+    buffer[buffer_index]=_port.read();
+    buffer_index++;
   }
+}
+
+int GUMSTIX_SERIAL::findLine(int index) {
+  for ( int i=index; i<buffer_index; i++ ) {
+    if ( buffer[i]=='\r' )
+      return i;
+  }
+  return -1;
+}
+
+void GUMSTIX_SERIAL::shiftBuffer( int shift ) {
+//  Serial.print("shifting ");
+//  Serial.print( buffer_index-shift );
+//  Serial.print(" bytes by ");
+//  Serial.println( shift );
+//  Serial.println("preshift: ");
+//  
+//  for ( int i=0; i<buffer_index; i++ ) {
+//    if ( buffer[i]=='\r' ) Serial.print("#");
+//    else Serial.print(buffer[i]);
+//  }
+//  Serial.println();
   
-  if ( index > 200 )
-    index = 0;
-}
-
-void GUMSTIX_SERIAL::parseBuffer() {
-  for ( int i=0; i<=index-3; i++ ) {
-    if ( buffer[i]=='m' && buffer[i+1]=='t' && buffer[i+2]=='r' ) {
-      parseMotorCommand(i);
-      break;
-    } else if ( buffer[i]=='c' && buffer[i+1]=='a' && buffer[i+2]=='l' ) {
-//      Serial.println("got calibration signal");
-      compass_calibration_signal = true;
-      break;
-    }
+  if ( shift==0 || buffer_index==0 ) return;
+  for ( int i=shift; i<buffer_index; i++ ) {
+    buffer[i-shift] = buffer[i];
   }
+  buffer_index-=shift;
+  
+//  Serial.println("postshift: ");
+//  for ( int i=0; i<buffer_index; i++ ) {
+//    if ( buffer[i]=='\r' ) Serial.print("#");
+//    else Serial.print(buffer[i]);
+//  }
+//  Serial.println();
 }
 
-void GUMSTIX_SERIAL::parseMotorCommand(int startIndex) {
-  last_integer_end = startIndex+4;
-  motor_thrust = parseNext();
-  motor_rudder = parseNext();
-  new_motor_command = true;
-  last_motor_command_time = millis();
-}
-
-int GUMSTIX_SERIAL::parseNext() {
-  int startPosition=-1, endPosition=-1;
-  for ( int i=last_integer_end; i<=index; i++ ) {
-    if ( buffer[i]=='=' )
-      startPosition = i;
-    else if ( buffer[i]==',' || buffer[i]=='\n' ) {
-      endPosition = i;
-      break;
+int GUMSTIX_SERIAL::processBuffer() {
+  int bytesUsed=0;
+  int stopIndex = findLine(bytesUsed);
+  if ( stopIndex == -1 ) return bytesUsed;
+  while ( bytesUsed < buffer_index ) {
+    if ( bytesUsed > stopIndex ) {
+      stopIndex = findLine( bytesUsed );
+      if ( stopIndex == -1 ) return bytesUsed;
     }
+    switch ( buffer[bytesUsed] ) {
+      case 'V':
+        parseMotorCommand( bytesUsed, stopIndex );
+        bytesUsed = stopIndex;
+        break;
+    }
+    bytesUsed++;
   }
-//  Serial.println(startPosition);
-//  Serial.println(endPosition);
-  if ( endPosition==-1 || startPosition==-1 || endPosition-startPosition <= 1) {
-    return 0;
+  return bytesUsed;
+}
+
+void GUMSTIX_SERIAL::parseMotorCommand( int index, int stopIndex ) {
+  if ( buffer[index]=='M' && buffer[index+1]=='=' ) {
+    sscanf( &buffer[index], "M=%d,%d", thrust, rudder );
+    last_command_time = millis();
   } else {
-    char tmp [10];
-    for ( int i=0; i<10; i++ ) {
-      tmp[i] = 0x00;
-    }
-    memcpy( tmp, &buffer[startPosition+1],endPosition-startPosition-1 );
-    last_integer_end = endPosition+1;
-    return atoi(tmp);
+    Serial.println("bad parse");
   }
 }
+
