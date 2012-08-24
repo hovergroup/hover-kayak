@@ -80,8 +80,31 @@ int Roboteq::processBuffer() {
       if ( stopIndex == -1 ) return bytesUsed;
     }
     switch ( buffer[bytesUsed] ) {
-      case 'M':
-        parseMotorCommand( bytesUsed, stopIndex );
+      case 'V':
+        parseVoltage( bytesUsed, stopIndex );
+        bytesUsed = stopIndex;
+        break;
+      case 'T':
+        parseTemperature( bytesUsed, stopIndex );
+        bytesUsed = stopIndex;
+        break;
+      case 'P':
+        parsePowerOutput( bytesUsed, stopIndex );
+        bytesUsed = stopIndex;
+        break;
+      case 'B':
+        parseBatteryAmps( bytesUsed, stopIndex );
+        bytesUsed = stopIndex;
+        break;
+      case 'A':
+        parseMotorAmps( bytesUsed, stopIndex );
+        bytesUsed = stopIndex;
+        break;
+      case 'D':
+        parseStopSwitch( bytesUsed, stopIndex );
+        bytesUsed = stopIndex;
+        break;
+      case '?':
         bytesUsed = stopIndex;
         break;
     }
