@@ -123,11 +123,11 @@ void loop() {
   roboteq.doWork();
   
   float battery_voltage = roboteq.getBatteryVoltage();
-  if ( battery_voltage < 11.2 )
+  if ( battery_voltage < 11.0 )
     thrust_limit = 200;
   else if ( battery_voltage < 10.6 )
     thrust_limit = 0;
-  else if ( battery_voltage > 11.8 )
+  else if ( battery_voltage > 11.6 )
     thrust_limit = 1000;
   
   // sbus iterate

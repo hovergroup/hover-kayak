@@ -144,7 +144,7 @@ void Roboteq::parseVoltage( int index, int stopIndex ) {
     int v1, v2, v3;
     sscanf( &buffer[index], "V=%d:%d:%d", &v1, &v2, &v3 );
     internal_voltage = v1/10.0;
-    battery_voltage = v2/10.0;
+    battery_voltage = .05*v2/10.0 + .95*battery_voltage;
     five_voltage = v3/1000.0;
   } else {
     Serial.println("bad parse");
