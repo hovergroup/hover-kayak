@@ -197,4 +197,5 @@ Roboteq::Roboteq(Stream& port) : _port(port)
   last_read_time = 0;
   read_state = 0;
   buffer_index=0;
+  battery_voltage = 0;
 }
