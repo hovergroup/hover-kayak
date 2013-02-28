@@ -7,13 +7,14 @@
 #include "azimuth.h"
 #include "gumstix_serial.h"
 #include "TMP102.h"
+#include "ACS715.h"
 
 Roboteq roboteq = Roboteq( Serial2 );
 Azimuth azimuth = Azimuth();
 SBUS sbus = SBUS(Serial3);
 GUMSTIX_SERIAL gumstix = GUMSTIX_SERIAL(Serial1);
 TMP102 temp = TMP102();
-
+ACS715 current = ACS715();
 
 void setup() {
   Wire.begin();
@@ -70,9 +71,10 @@ void publishActuators() {
 
 void publishCurrents() {
   char message[20];
-  sprintf( &message[0], "?C=%d,%d", 
+  sprintf( &message[0], "?C=%d,%d,%d", 
     (int) (roboteq.getBatteryAmps()*10.0), 
-    (int) (roboteq.getMotorAmps()*10.0) );
+    (int) (roboteq.getMotorAmps()*10.0),
+    current.getMilliAmps() );
   Serial1.println(message);
 //  Serial.println(message);  
 }
