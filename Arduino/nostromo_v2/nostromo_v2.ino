@@ -25,6 +25,8 @@ void setup() {
   pinMode(mainBattery12vRelayPin, OUTPUT);
   digitalWrite(mainBattery12vRelayPin, HIGH);
   pinMode(servoPowerRelayPin, OUTPUT);
+  pinMode(radioSwitchPin, OUTPUT);
+  digitalWrite(radioSwitchPin, LOW);
   
   // open serial ports
   Serial.begin(115200);
@@ -104,11 +106,11 @@ void setThrust( int thrust ) {
 const int actuator_publish_period = 50;
 const int general_publish_period = 500;
 unsigned long actuator_publish_time=0, general_publish_time=0, last_command_fetch=0;
-boolean use_rc;
 
 void loop() {
   gumstix.doWork();
   roboteq.doWork();
+  sbus.doWork();
   
   if ( millis()-actuator_publish_time > actuator_publish_period ) {
     publishActuators();
@@ -120,12 +122,8 @@ void loop() {
     publishCurrents();
     publishTemps();
     general_publish_time = millis();
+    
   }
-  
-  // comms iterate
-  gumstix.doWork();
-  roboteq.doWork();
-  sbus.doWork();
   
   float battery_voltage = roboteq.getBatteryVoltage();
   if ( battery_voltage < 11.0 )
@@ -135,7 +133,7 @@ void loop() {
   else if ( battery_voltage > 11.6 )
     thrust_limit = 1000;
   
-  if ( use_rc ) {
+  if ( sbus.getUseRC() ) {
     if ( !sbus.getSerialEnable() ) { // get commands from RC
       int target_pwm = sbus.getThrust();
       if ( abs(target_pwm) < 50 ) target_pwm = 0;

@@ -77,6 +77,10 @@ int GUMSTIX_SERIAL::processBuffer() {
         parseMotorCommand( bytesUsed, stopIndex );
         bytesUsed = stopIndex;
         break;
+      case 'R':
+        parseRadioCommand(bytesUsed, stopIndex);
+        bytesUsed = stopIndex;
+        break;
     }
     bytesUsed++;
   }
@@ -101,4 +105,16 @@ void GUMSTIX_SERIAL::parseMotorCommand( int index, int stopIndex ) {
   }
 }
 
+void GUMSTIX_SERIAL::parseRadioCommand(int index, int stopIndex) {
+  if ( buffer[index]=='R' && buffer[index+1]=='=' ) {
+    int cmd;
+    sscanf( &buffer[index], "R=%d", &cmd);
+    if (cmd)
+      digitalWrite(radioSwitchPin, HIGH);
+    else
+      digitalWrite(radioSwitchPin, LOW);
+  } else {
+    Serial.println("bad parse");
+  }
+}
 

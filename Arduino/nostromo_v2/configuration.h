@@ -9,6 +9,7 @@
 #define voltageDividerPinNumber 4
 #define azimuthServoPinNumber A0
 #define thrusterEStopPin 7
+#define radioSwitchPin 58
 
 // these two values align the servo
 #define azimuthCenter 1462

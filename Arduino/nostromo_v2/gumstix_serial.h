@@ -1,4 +1,5 @@
 #include "Arduino.h"
+#include "configuration.h"
 
 #ifndef __GUMSTIX_SERIAL_H
 #define __GUMSTIX_SERIAL_H
@@ -28,7 +29,8 @@ private:
   int findLine( int index );
   void shiftBuffer( int shift );
   
-  void parseMotorCommand( int index, int stopIndex );
+  void parseMotorCommand(int index, int stopIndex);
+  void parseRadioCommand(int index, int stopIndex);
 };
 
 #endif
