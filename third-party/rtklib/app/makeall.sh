@@ -11,6 +11,7 @@ cd ../..
 echo; echo % str2str/gcc
 cd str2str/gcc
 make $1
+make install
 cd ../..
 
 echo; echo % rnx2rtkp/gcc
@@ -26,5 +27,6 @@ cd ../..
 echo; echo % rtkrcv/gcc
 cd rtkrcv/gcc
 make $1
+make install
 cd ../..
 
