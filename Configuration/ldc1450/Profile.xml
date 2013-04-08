@@ -114,7 +114,7 @@
         <Nodes>
           <Node Text="DIn1" Value="">
             <Nodes>
-              <Node Text="Active Level" Value="0">
+              <Node Text="Active Level" Value="1">
                 <Nodes />
               </Node>
               <Node Text="Action" Value="19">
