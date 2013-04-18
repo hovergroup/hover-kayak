@@ -12,7 +12,7 @@
 #define radioSwitchPin 58
 
 // these two values align the servo
-#define azimuthCenter 1600
+#define azimuthCenter 1620
 #define azimuth60Range 587
 
 // thrust limiting when turning
