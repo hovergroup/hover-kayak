@@ -1,1 +1,3 @@
 sudo ./str2str -in serial://ttyACM1 -out tcpsvr://:50000 -out file://gpslog1 -c ublox.cmd
+
+sudo ./str2str -in serial://ttyACM0 -out file://2013_04_30_gps.log -c ublox.cmd
