@@ -1,1 +1,1 @@
-../rtklib/app/rtkrcv/gcc/rtkrcv -o rtknavi.conf -s -p 50002
+../rtklib/app/rtkrcv/gcc/rtkrcv -o rtknavi.conf -s
