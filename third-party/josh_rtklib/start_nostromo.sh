@@ -1,1 +1,1 @@
-${THIRD_PARTY_DIR}/rtklib/app/str2str/gcc/str2str -in serial://ttyACM0 -out tcpsvr://:50000 -c ublox_vehicle.cmd
+/home/josh/third-party/rtklib/app/str2str/gcc/str2str -in serial://ttyACM0 -out tcpsvr://:50000 -c ublox_vehicle.cmd
