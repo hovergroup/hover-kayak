@@ -25,6 +25,7 @@ void setup() {
   pinMode(mainBattery12vRelayPin, OUTPUT);
   digitalWrite(mainBattery12vRelayPin, HIGH);
   pinMode(servoPowerRelayPin, OUTPUT);
+  digitalWrite(servoPowerRelayPin, HIGH);
   pinMode(radioSwitchPin, OUTPUT);
   digitalWrite(radioSwitchPin, LOW);
   
