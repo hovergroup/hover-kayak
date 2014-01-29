@@ -24,9 +24,11 @@ uint32_t baud = 100000;
 
 void setup(){
   Serial.begin(115200);
-  Serial2.begin(100000);
-  UCSR2C = (1<<USBS0)|(3<<UCSZ00);
-  UCSR2C |= B00110000;
+  Serial3.begin(100000);
+  //UCSR3C = (1<<USBS0)|(3<<UCSZ00);
+  //UCSR3C |= B00110000;
+  delay(500);
+  Serial.println("running");
 }
 
 void loop(){
@@ -229,8 +231,9 @@ void update_channels(void) {
 
 }
 void feedLine(){
-  while(Serial2.available()){
-    inData = Serial2.read();
+  while(Serial3.available()){
+    inData = Serial3.read();
+    //Serial.print(inData);
     if (inData == 0x0f){
       bufferIndex = 0;
       inBuffer[bufferIndex] = inData;
