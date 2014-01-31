@@ -2,7 +2,7 @@
 #define RADIO_H
 
 #include <Arduino.h>
-
+  
 #define radioSwitchPin 58
 
 enum RadioPower {
@@ -14,6 +14,10 @@ class RadioControl
 {
 public:
   RadioControl() {}
+  
+  void initialize() {
+    pinMode(radioSwitchPin, OUTPUT);
+  }
   
   void powerBullet() {
     digitalWrite(radioSwitchPin, LOW);

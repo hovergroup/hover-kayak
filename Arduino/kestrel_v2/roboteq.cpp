@@ -223,6 +223,8 @@ Roboteq::Roboteq(Stream& port) : _port(port)
   battery_voltage = 0;
   total_bad_parse_count = 0;
   
+  stop_switch = true;
+  
   speedCount = 0;
   voltageCount = 0;
   tempCount = 0;

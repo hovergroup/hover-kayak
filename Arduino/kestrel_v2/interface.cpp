@@ -1,16 +1,31 @@
 #include "interface.h"
 
+#define restartPin 12
+
+char RESTART_STRING[] = "restart";
+
 void Interface::printMainMenu() {
   _port.println("Main Menu");
   _port.println("1        Status");
   _port.println("2        RC");
   _port.println("3        Roboteq");
   _port.println("4        Radio");
-  _port.println("5        Restart");
+  _port.println("5        Manual Control");
+  _port.println("6        Power");
+  _port.println("9        Restart");
   _port.println();
 }
 
 void Interface::doWork() {
+  // watch timeout in manual control
+  if (m_state == manual_control && millis() - last_manual_command > 30000) {
+    manual_enabled = false;
+    desired_thrust = 0;
+    desired_rudder = 0;
+    m_state = main_menu;
+    printMainMenu(); 
+  }
+  
   if (_port.available() != 0) {
     handleIncoming();
   }
@@ -47,11 +62,39 @@ void Interface::handleIncoming() {
       handleRadioMenu();
       break;
       
+    case manual_control:
+      handleManualControl();
+      break;
+      
+    case restart_prompt:
+      handleRestartPrompt();
+      break;
+      
     default:
       break;
   }
   while (_port.available() != 0) {
     _port.read();
+  }
+}
+
+void Interface::handleRestartPrompt() {
+  while (_port.available()) {
+    char c = _port.read();
+    if (c == RESTART_STRING[restart_state]) {
+      restart_state++;
+    } else {
+      m_state = main_menu;
+      printMainMenu();
+    }
+    
+    if (restart_state == 7) {
+      m_state = main_menu;
+      _port.println("\n\nBe right back.");
+      pinMode(restartPin, OUTPUT);
+      digitalWrite(restartPin, HIGH);
+      break;
+    }
   }
 }
 
@@ -92,10 +135,105 @@ void Interface::mainMenuSelect(int rc) {
       printRadioStatus();
       m_state = radio_menu;
       break;
+      
+    case 5:
+      printManualInstructions();
+      m_state = manual_control;
+      desired_thrust = 0;
+      desired_rudder = 0;
+      manual_enabled = true;
+      last_manual_command = millis();
+      break;
+      
+    case 6:
+      printPowerStatus();
+      break;
+      
+    case 9:
+      printRestartPrompt();
+      m_state = restart_prompt;
+      restart_state = 0;
+      break;
      
     default:
       break;
   } 
+}
+
+void Interface::handleManualControl() {
+  char c = _port.read();
+  while (_port.available()) {
+    _port.read();
+  }
+  
+  switch (c) {
+    case 'w':
+      desired_thrust += 20;
+      updateManualControls();
+      break;
+    case 's':
+      desired_thrust -= 20;
+      updateManualControls();
+      break;
+    case 'x':
+      desired_thrust = 0;
+      updateManualControls();
+      break;
+    case 'n':
+      desired_rudder -= 2;
+      updateManualControls();
+      break;
+    case 'm':
+      desired_rudder += 2;
+      updateManualControls();
+      break;
+    case 'b':
+      desired_rudder = 0;
+      updateManualControls();
+      break;
+    case ' ':
+      updateManualControls();
+      break;
+    case 'q':
+    
+      printMainMenu();
+      m_state = main_menu;
+      manual_enabled = false;
+      desired_thrust = 0;
+      desired_rudder = 0;
+      break;
+    default:
+      printManualInstructions();
+      break;
+  }
+}
+
+void Interface::updateManualControls() {
+  last_manual_command = millis();
+  desired_rudder = constrain(desired_rudder, -60, 60);
+  desired_thrust = constrain(desired_thrust, -1000, 1000);
+  char message[100];
+  sprintf( &message[0], "Thrust: %d   Rudder: %d", desired_thrust, desired_rudder);
+  _port.println(message);
+}
+
+void Interface::printManualInstructions() {
+   _port.println("w/s to increase/decrease thrust, x to reset");
+   _port.println("n/m to control rudder, b to reset");
+   _port.println("press q to return to main menu");
+   _port.println("space to refresh command");
+   _port.println("control will timeout after 30 seconds of inactivity");
+}
+
+void Interface::printPowerStatus() {
+   printLine("Voltage: ", roboteq.getBatteryVoltage());
+   printLine("Thrust Limit: ", battery.getThrustLimit());
+  _port.println();
+  printMainMenu();
+}
+
+void Interface::printRestartPrompt() {
+  _port.println("Are you sure?  Type \"restart\" to confirm.");
 }
 
 void Interface::printRadioStatus() {
@@ -130,7 +268,7 @@ void Interface::printRoboteqStatus() {
 
 void Interface::printRCStatus() {
   _port.println("Current RC Status:");
-  printBool("RC signal: ", sbus.getUseRC(), "AVAILABLE", "UNAVAILABLE");
+  printBool("RC signal: ", sbus.getRcAvailable(), "AVAILABLE", "UNAVAILABLE");
   printBool("Serial enable: ", sbus.getSerialEnable(), "TRUE", "FALSE");
   printBool("Thrust enable: ", sbus.getThrustEnable(), "TRUE", "FALSE");
   printLine("Thrust: ", sbus.getThrust());

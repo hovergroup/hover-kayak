@@ -17,7 +17,7 @@ uint8_t  failsafe_status;
   
   int getThrust();
   int getRudder();
-  boolean getUseRC() { return use_rc; }
+  boolean getRcAvailable() { return use_rc; }
   boolean getThrustEnable() { return thrust_enable; }
   boolean getSerialEnable() { return serial_enable; }
   
