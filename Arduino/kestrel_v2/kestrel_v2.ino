@@ -20,14 +20,16 @@
 #include "azimuth.h"
 #include "tmp102.h"
 #include "battery.h"
+#include "gumstix.h"
 
 SBUS sbus = SBUS(Serial3);
 Interface interface = Interface(Serial);
-Roboteq roboteq = Roboteq( Serial2 );
+Roboteq roboteq = Roboteq(Serial2);
 RadioControl radio = RadioControl();
 Azimuth azimuth = Azimuth();
 TMP102 tmp102 = TMP102();
 Battery battery = Battery();
+GumstixSerial gumstix = GumstixSerial(Serial1);
 
 void setup() {
   Wire.begin();
@@ -65,6 +67,7 @@ void loop() {
   interface.doWork();
   roboteq.doWork();
   battery.doWork();
+  gumstix.doWork();
   
   // inform azimuth of e-stop and thrust limit settings
   azimuth.setEStop(roboteq.getStopSwitch());
@@ -80,9 +83,10 @@ void loop() {
       desired_thrust = sbus.getThrust();
     else
       desired_thrust = 0;
-  } /* else if (gumstix.available()) { // get commands from gumstix
-    
-  } */ else { // do nothing
+  } else if (gumstix.getCommandsAvailable()) { // get commands from gumstix
+    desired_thrust = gumstix.getThrustCommand();
+    desired_rudder = gumstix.getRudderCommand();
+  } else { // do nothing
     desired_thrust = 0;
     desired_rudder = 0;
   }
@@ -108,6 +112,7 @@ void loop() {
   float command_timer_elapsed = millis() - command_timer_start;
   if (command_timer_elapsed > 5000) {
     roboteq.rolloverCounters(command_timer_elapsed/1000.0);
+    gumstix.rolloverCounters(command_timer_elapsed/1000.0);
     core_looprate = iteration*1000.0/command_timer_elapsed;
     tmp102.updateReading();
     command_timer_start = millis();

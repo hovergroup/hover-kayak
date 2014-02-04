@@ -12,6 +12,7 @@ void Interface::printMainMenu() {
   _port.println("4        Radio");
   _port.println("5        Manual Control");
   _port.println("6        Power");
+  _port.println("7        Gumstix");
   _port.println("9        Restart");
   _port.println();
 }
@@ -149,6 +150,10 @@ void Interface::mainMenuSelect(int rc) {
       printPowerStatus();
       break;
       
+    case 7:
+      printGumstixStatus();
+      break;
+      
     case 9:
       printRestartPrompt();
       m_state = restart_prompt;
@@ -262,6 +267,16 @@ void Interface::printRoboteqStatus() {
   printLine("Power Read Rate (Hz): ", roboteq.getPowerOutRate());
   printLine("Bad Parse Rate (Hz): ", roboteq.getBadParseRate());
   printLine("Total Bad Parses: ", roboteq.getTotalBadParses());
+  _port.println();
+  printMainMenu();
+}
+
+void Interface::printGumstixStatus() {
+  _port.println("Current Gumstix Status:");
+  printBool("Commands: ", gumstix.getCommandsAvailable(), "AVAILABLE", "UNAVAILABLE");
+  printLine("Motor Command Rate (Hz): ", gumstix.getMotorCommandRate());
+  printLine("Bad Parse Rate (Hz): ", gumstix.getBadParseRate());
+  printLine("Total Bad Parses: ", gumstix.getTotalBadParseCount());
   _port.println();
   printMainMenu();
 }

@@ -9,11 +9,13 @@ extern float core_looprate;
 #include "roboteq.h"
 #include "radio.h"
 #include "battery.h"
+#include "gumstix.h"
 
 extern SBUS sbus;
 extern Roboteq roboteq;
 extern RadioControl radio;
 extern Battery battery;
+extern GumstixSerial gumstix;
 
 class Interface
 {
@@ -52,6 +54,7 @@ private:
   void printPowerStatus();
   void printManualInstructions();
   void printRestartPrompt();
+  void printGumstixStatus();
   
   void updateManualControls();
     
