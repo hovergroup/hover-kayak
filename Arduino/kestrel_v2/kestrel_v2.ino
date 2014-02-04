@@ -77,7 +77,9 @@ void loop() {
   if (interface.getManualEnabled()) { // get commands from manual input
     desired_thrust = interface.getThrustCommand();
     desired_rudder = interface.getRudderCommand();
+    interface.setCommandSource(s_manual);
   } else if (sbus.getRcAvailable() && !sbus.getSerialEnable()) { // get commands from rc
+    interface.setCommandSource(s_rc);
     desired_rudder = sbus.getRudder();
     if (sbus.getThrustEnable())
       desired_thrust = sbus.getThrust();
@@ -86,9 +88,11 @@ void loop() {
   } else if (gumstix.getCommandsAvailable()) { // get commands from gumstix
     desired_thrust = gumstix.getThrustCommand();
     desired_rudder = gumstix.getRudderCommand();
+    interface.setCommandSource(s_gumstix);
   } else { // do nothing
     desired_thrust = 0;
     desired_rudder = 0;
+    interface.setCommandSource(s_no_input);
   }
   
   // send rudder command

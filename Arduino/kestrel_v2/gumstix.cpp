@@ -11,6 +11,8 @@ GumstixSerial::GumstixSerial(Stream& port) : _port(port)
   totalBadParseCount = 0;
   last_slow_publish = 0;
   last_fast_publish = 0;
+  fastReportCount = 0;
+  slowReportCount = 0;
 }
 
 void GumstixSerial::doWork() {
@@ -25,6 +27,10 @@ void GumstixSerial::doWork() {
   if (millis() - last_slow_publish > slow_publish_period) {
     publishSlow();
     last_slow_publish=millis(); 
+  }
+  if (millis() - last_fast_publish > fast_publish_period) {
+    publishFast();
+    last_fast_publish=millis();
   }
 }
 
@@ -131,15 +137,19 @@ void GumstixSerial::parseRadioCommand(int index, int stopIndex) {
 void GumstixSerial::rolloverCounters(float elapsed_seconds) {
   motorCommandRate = motorCommandCount / elapsed_seconds;
   badParseRate = badParseCount / elapsed_seconds;
+  slowReportRate = slowReportCount / elapsed_seconds;
+  fastReportRate = fastReportCount / elapsed_seconds;
   
   totalBadParseCount += badParseRate;
 
   motorCommandCount = 0;
   badParseCount = 0;
+  fastReportCount = 0;
+  slowReportCount = 0;
 }
 
 void GumstixSerial::publishSlow() {
-  char message[256];
+  char message[100];
   sprintf( &message[0], "?S=%d,%d,%d,%d,%d,%d,%d,%d",
     (int) (roboteq.getBatteryVoltage()*10.0),
     (int) (roboteq.getBatteryAmps()*10.0),
@@ -149,5 +159,13 @@ void GumstixSerial::publishSlow() {
     roboteq.getInternalTemp(),
     battery.getThrustLimit(),
     radio.getRadioPower() ); // 0 = bullet, 1 = freewave
-    _port.println(message);
+  _port.println(message);
+  slowReportCount++;
+}
+
+void GumstixSerial::publishFast() {
+  char message[20];
+  sprintf( &message[0], "?M=%d,%d", roboteq.getPowerOutput(), azimuth.getCurrentAngle() );
+  _port.println(message);
+  fastReportCount++;
 }

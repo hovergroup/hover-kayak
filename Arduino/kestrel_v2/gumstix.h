@@ -28,6 +28,8 @@ public:
   float getMotorCommandRate() { return motorCommandRate; }
   float getBadParseRate() { return badParseRate; }
   unsigned long getTotalBadParseCount() { return totalBadParseCount; }
+  float getFastReportRate() { return fastReportRate; }
+  float getSlowReportRate() { return slowReportRate; }
   
 private:
   Stream& _port;
@@ -57,11 +59,11 @@ private:
   void publishSlow();
   
   static const int slow_publish_period = 1000;
-  static const int fast_publish_period = 50;
+  static const int fast_publish_period = 20;
   unsigned long last_slow_publish, last_fast_publish;
   
-  float motorCommandRate, badParseRate;
-  int motorCommandCount, badParseCount;
+  float motorCommandRate, badParseRate, fastReportRate, slowReportRate;
+  int motorCommandCount, badParseCount, fastReportCount, slowReportCount;
   unsigned long totalBadParseCount;
 };
 

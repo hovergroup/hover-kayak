@@ -17,6 +17,13 @@ extern RadioControl radio;
 extern Battery battery;
 extern GumstixSerial gumstix;
 
+enum CommandSource {
+  s_rc,
+  s_manual,
+  s_gumstix,
+  s_no_input
+};
+
 class Interface
 {
 private:
@@ -40,6 +47,8 @@ public:
   boolean getManualEnabled() { return manual_enabled; }
   int getThrustCommand() { return desired_thrust; }
   int getRudderCommand() { return desired_rudder; }
+  
+  void setCommandSource(CommandSource cs) { command_source = cs; }
   
 private:
   Stream& _port;
@@ -76,6 +85,7 @@ private:
   int desired_thrust, desired_rudder;
   unsigned long last_manual_command;
   
+  CommandSource command_source;
 };
 
 #endif

@@ -275,6 +275,8 @@ void Interface::printGumstixStatus() {
   _port.println("Current Gumstix Status:");
   printBool("Commands: ", gumstix.getCommandsAvailable(), "AVAILABLE", "UNAVAILABLE");
   printLine("Motor Command Rate (Hz): ", gumstix.getMotorCommandRate());
+  printLine("Fast Report Rate (Hz): ", gumstix.getFastReportRate());
+  printLine("Slow Report Rate (Hz): ", gumstix.getSlowReportRate());
   printLine("Bad Parse Rate (Hz): ", gumstix.getBadParseRate());
   printLine("Total Bad Parses: ", gumstix.getTotalBadParseCount());
   _port.println();
@@ -293,7 +295,34 @@ void Interface::printRCStatus() {
 }
 
 void Interface::printStatus() {
+  unsigned long uptime_s = millis() / 1000.0;
+  int hours = uptime_s / 3600;
+  int rem = uptime_s % 3600;
+  int minutes = rem / 60;
+  int seconds = rem % 60;
+  char message[100];
+  sprintf(&message[0], "Uptime: %d h, %d m, %d s", hours, minutes, seconds);
+  
   printLine("Average looprate (Hz): ", core_looprate);
+  
+  switch(command_source) {
+  case s_rc:
+    _port.println("Command source: RC");
+    break;
+  case s_manual:
+    _port.println("Command source: Manual");
+    break;
+  case s_gumstix:
+    _port.println("Command source: Gumstix");
+    break;
+  case s_no_input:
+    _port.println("Command source: No input");
+    break;
+  }
+  
+  printLine("Thrust output: ", roboteq.getPowerOutput());
+  printLine("Rudder output: ", azimuth.getCurrentAngle());
+  _port.println(message);
   _port.println();
   printMainMenu();
 }
