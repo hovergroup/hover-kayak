@@ -1,10 +1,6 @@
-
-// 0-1023 (analogRead) -> v_batt
-#define voltageDividerGain 23
-
 // pin configuration
-#define mainBattery5vRelayPin 56
-#define mainBattery12vRelayPin 55
+#define RelayPinVbatt 56
+#define RelayPin12V 55
 
 // thrust limiting when turning
 #define limitStartAngle 30 // angle past which limiting should start
@@ -34,10 +30,10 @@ GumstixSerial gumstix = GumstixSerial(Serial1);
 void setup() {
   Wire.begin();
   
-  pinMode(mainBattery5vRelayPin, OUTPUT);
-  digitalWrite(mainBattery5vRelayPin, HIGH);
-  pinMode(mainBattery12vRelayPin, OUTPUT);
-  digitalWrite(mainBattery12vRelayPin, HIGH);
+  pinMode(RelayPinVbatt, OUTPUT);
+  digitalWrite(RelayPinVbatt, HIGH);
+  pinMode(RelayPin12V, OUTPUT);
+  digitalWrite(RelayPin12V, HIGH);
   
   radio.initialize();
   azimuth.initialize();

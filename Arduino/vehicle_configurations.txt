@@ -1,0 +1,10 @@
+Kestrel:
+SBUS - Serial3
+Roboteq - Serial2
+Gumstix - Serial1
+Vbatt relay - 56
+12v relay - 55
+Servo power - 57
+Servo pwm - A0
+restart pin - 12
+radio switch pin - 58
