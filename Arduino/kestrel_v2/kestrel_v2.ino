@@ -17,6 +17,7 @@
 #include "tmp102.h"
 #include "battery.h"
 #include "gumstix.h"
+#include "lights.h"
 
 SBUS sbus = SBUS(Serial3);
 Interface interface = Interface(Serial);
@@ -26,6 +27,7 @@ Azimuth azimuth = Azimuth();
 TMP102 tmp102 = TMP102();
 Battery battery = Battery();
 GumstixSerial gumstix = GumstixSerial(Serial1);
+Lights lights = Lights();
 
 void setup() {
   Wire.begin();
@@ -46,6 +48,8 @@ void setup() {
   Serial1.begin(115200);
   Serial2.begin(115200);
   delay(500);
+  
+  roboteq.setLights(false);
 }
 
 // timing
@@ -64,10 +68,12 @@ void loop() {
   roboteq.doWork();
   battery.doWork();
   gumstix.doWork();
+  lights.doWork();
   
   // inform azimuth of e-stop and thrust limit settings
   azimuth.setEStop(roboteq.getStopSwitch());
   azimuth.setThrustLimit(battery.getThrustLimit());
+  lights.setEStop(roboteq.getStopSwitch());
   
   // go through potential command sources
   if (interface.getManualEnabled()) { // get commands from manual input

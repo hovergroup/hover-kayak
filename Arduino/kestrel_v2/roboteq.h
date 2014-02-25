@@ -36,6 +36,10 @@ public:
   float getPowerOutRate() { return powerOutRate; }
   float getBadParseRate() { return badParseRate; }
   
+  void setLights(boolean onoff);
+  void toggleLights();
+  boolean getLightsState() { return lights_state; }
+  
 private:
   Stream& _port;
   static const unsigned int ROBOTEQ_READ_UPDATE = 20;
@@ -70,6 +74,8 @@ private:
   float speedRate, voltageRate, tempRate, motorAmpRate, batteryAmpRate, stopSwitchRate, powerOutRate, badParseRate;
   
   int speedCount, voltageCount, tempCount, motorAmpCount, batteryAmpCount, stopSwitchCount, powerOutCount, badParseCount;
+  
+  boolean lights_state;
 };
 
 #endif

@@ -126,6 +126,18 @@ void Roboteq::sendSpeed( int velocity ) {
   speedCount++;
 }
 
+void Roboteq::setLights(boolean onoff) {
+  lights_state = onoff;
+  if (onoff)
+    _port.println("!D1 1");
+  else
+    _port.println("!D0 1");
+}
+
+void Roboteq::toggleLights() {
+  setLights(!lights_state);
+}
+
 void Roboteq::parseTemperature( int index, int stopIndex ) {
   if ( buffer[index]=='T' && buffer[index+1]=='=' ) {
     sscanf( &buffer[index], "T=%d:%d", &internal_temp, &heatsink_temp );

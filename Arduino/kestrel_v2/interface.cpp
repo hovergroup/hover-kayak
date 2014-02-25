@@ -13,6 +13,7 @@ void Interface::printMainMenu() {
   _port.println("5        Manual Control");
   _port.println("6        Power");
   _port.println("7        Gumstix");
+  _port.println("8        Lights");
   _port.println("9        Restart");
   _port.println();
 }
@@ -154,6 +155,11 @@ void Interface::mainMenuSelect(int rc) {
       printGumstixStatus();
       break;
       
+    case 8:
+      printAndToggleLights();
+      printMainMenu();
+      break;
+      
     case 9:
       printRestartPrompt();
       m_state = restart_prompt;
@@ -235,6 +241,16 @@ void Interface::printPowerStatus() {
    printLine("Thrust Limit: ", battery.getThrustLimit());
   _port.println();
   printMainMenu();
+}
+
+void Interface::printAndToggleLights() {
+  if (lights.getEnabled()) {
+    _port.println("Lights are now disabled.");
+    lights.setInterfaceEnable(false);
+  } else {
+    _port.println("Lights are now enabled.");
+    lights.setInterfaceEnable(true);
+  } 
 }
 
 void Interface::printRestartPrompt() {

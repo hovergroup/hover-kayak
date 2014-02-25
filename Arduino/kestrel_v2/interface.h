@@ -10,12 +10,14 @@ extern float core_looprate;
 #include "radio.h"
 #include "battery.h"
 #include "gumstix.h"
+#include "lights.h"
 
 extern SBUS sbus;
 extern Roboteq roboteq;
 extern RadioControl radio;
 extern Battery battery;
 extern GumstixSerial gumstix;
+extern Lights lights;
 
 enum CommandSource {
   s_rc,
@@ -64,6 +66,7 @@ private:
   void printManualInstructions();
   void printRestartPrompt();
   void printGumstixStatus();
+  void printAndToggleLights();
   
   void updateManualControls();
     

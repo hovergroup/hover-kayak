@@ -609,7 +609,7 @@
               <Node Text="Active Level" Value="0">
                 <Nodes />
               </Node>
-              <Node Text="Activate when" Value="17">
+              <Node Text="Activate when" Value="16">
                 <Nodes />
               </Node>
             </Nodes>
@@ -619,7 +619,7 @@
               <Node Text="Active Level" Value="0">
                 <Nodes />
               </Node>
-              <Node Text="Activate when" Value="22">
+              <Node Text="Activate when" Value="16">
                 <Nodes />
               </Node>
             </Nodes>
@@ -637,7 +637,7 @@
           </Node>
           <Node Text="Voltage Limits">
             <Nodes>
-              <Node Text="Over Voltage Limit (V)" Value="500">
+              <Node Text="Over Voltage Limit (V)" Value="350">
                 <Nodes />
               </Node>
               <Node Text="Under Voltage Limit (V)" Value="50">
