@@ -32,18 +32,22 @@ Lights lights = Lights();
 void setup() {
   Wire.begin();
   
+  // turn on 12v regulator and Vbatt relay
   pinMode(RelayPinVbatt, OUTPUT);
   digitalWrite(RelayPinVbatt, HIGH);
   pinMode(RelayPin12V, OUTPUT);
   digitalWrite(RelayPin12V, HIGH);
   
+  // initialize and set defaults as needed
   radio.initialize();
   azimuth.initialize();
   radio.powerBullet();
     
+  // interface serial
   Serial.begin(115200);
   Serial.setTimeout(1);
   
+  // other serials
   Serial3.begin(100000);
   Serial1.begin(115200);
   Serial2.begin(115200);

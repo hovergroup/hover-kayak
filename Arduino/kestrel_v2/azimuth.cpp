@@ -21,7 +21,7 @@ void Azimuth::initialize() {
 }
 
 void Azimuth::setAngle( int angle ) {
-  // constrain agnel
+  // constrain angle
   int set_angle = constrain( angle, -60, 60);
   current_angle = set_angle;
   // map angle to microseconds
