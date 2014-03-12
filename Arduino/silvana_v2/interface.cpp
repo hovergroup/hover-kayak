@@ -5,7 +5,7 @@
 char RESTART_STRING[] = "restart";
 
 void Interface::printMainMenu() {
-  _port.println("Kestrel Main Menu");
+  _port.println("Silvana Main Menu");
   _port.println("1        Status");
   _port.println("2        RC");
   _port.println("3        Roboteq");
