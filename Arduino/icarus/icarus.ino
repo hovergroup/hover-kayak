@@ -22,7 +22,10 @@ void loop() {
   float pinvoltage = val * 5.0 / 1024;
   float batteryvoltage = pinvoltage * divider + 0.1;
   tmp102.updateReading();
-  Serial.print(tmp102.getTemp());
-  Serial.print("   ");
-  Serial.println(batteryvoltage);
+  
+  char message[100];
+  sprintf(&message[0], "?I=%d,%d",
+    (int) (batteryvoltage*100.0),
+    (int) (tmp102.getTemp()*10.0) );
+  Serial.println(message);
 }
