@@ -19,7 +19,7 @@ public:
     timings[1] = 60;
     timings[2] = 40;
     timings[3] = 60;
-    timings[4] = 200;
+    timings[4] = 300;
     timings[5] = 60;
   }
   

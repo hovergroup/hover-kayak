@@ -129,9 +129,9 @@ void Roboteq::sendSpeed( int velocity ) {
 void Roboteq::setLights(boolean onoff) {
   lights_state = onoff;
   if (onoff)
-    _port.println("!D0 1");
-  else
     _port.println("!D1 1");
+  else
+    _port.println("!D0 1");
 }
 
 void Roboteq::toggleLights() {
