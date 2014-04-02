@@ -16,11 +16,11 @@ public:
     enabled = false;
     estop = true;
     timings[0] = 2000;
-    timings[1] = 60;
-    timings[2] = 40;
-    timings[3] = 60;
-    timings[4] = 300;
-    timings[5] = 60;
+    timings[1] = 100;
+    timings[2] = 75;
+    timings[3] = 100;
+    timings[4] = 350;
+    timings[5] = 100;
   }
   
   void setEStop(boolean b) {
