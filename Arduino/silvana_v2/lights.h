@@ -17,9 +17,9 @@ public:
     estop = true;
     timings[0] = 2000;
     timings[1] = 100;
-    timings[2] = 75;
+    timings[2] = 150;
     timings[3] = 100;
-    timings[4] = 350;
+    timings[4] = 400;
     timings[5] = 100;
   }
   
