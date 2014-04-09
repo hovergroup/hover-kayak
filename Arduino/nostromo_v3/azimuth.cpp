@@ -15,7 +15,7 @@ Azimuth::Azimuth() {
 
 void Azimuth::initialize() {
   pinMode(servoPowerRelayPin, OUTPUT);
-  digitalWrite(servoPowerRelayPin, HIGH);
+  digitalWrite(servoPowerRelayPin, LOW);
   azimuth_servo.attach(azimuthServoPinNumber);
   setAngle( 0 );
 }
@@ -48,12 +48,12 @@ void Azimuth::setThrustLimit(int limit) {
 void Azimuth::updatePower() {
   if (e_stop_on || limit_at_zero) { // turn off servo if either e-stop is on or thrust limit is 0
     if (!power_off) { // only write to pin if toggling power
-      digitalWrite(servoPowerRelayPin, HIGH);
+      digitalWrite(servoPowerRelayPin, LOW);
       power_off = true;
     }
   } else {
     if (power_off) {
-      digitalWrite(servoPowerRelayPin, LOW);
+      digitalWrite(servoPowerRelayPin, HIGH);
       power_off = false;
     }
   }
