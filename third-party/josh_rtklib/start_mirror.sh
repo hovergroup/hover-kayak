@@ -1,0 +1,1 @@
+../rtklib/app/str2str/gcc/str2str -in tcpsvr://pavlab.mit.edu:50000 -out tcpsvr://:50000
