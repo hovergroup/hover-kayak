@@ -5,7 +5,7 @@
 // thrust limiting when turning
 #define limitStartAngle 30 // angle past which limiting should start
 #define limitOffset 0 // ammount shich should be limited at start angle
-#define limitSlope 10 // additional thrust limited per degree past start angle
+#define limitSlope 15 // additional thrust limited per degree past start angle
 
 #include <Wire.h>
 #include <Servo.h>

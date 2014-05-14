@@ -10,6 +10,7 @@ failsafe_status = SBUS_SIGNAL_FAILSAFE;
 sbus_passthrough = 1;
 bufferIndex=0;
 toChannels = 0;
+rc_active_time = 0;
 }
 
 int SBUS::getThrust() {
@@ -26,7 +27,13 @@ void SBUS::doWork() {
   if (iterate()) {
     if ( failsafe_status == SBUS_SIGNAL_OK ) {
       use_rc = true;
+      rc_active_time = millis();
+      rc_lost = false;
     } else {
+      rc_lost = true;
+    }
+    
+    if (rc_lost && millis() - rc_active_time > 500) {
       use_rc = false;
     }
     

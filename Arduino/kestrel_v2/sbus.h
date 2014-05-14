@@ -22,7 +22,8 @@ uint8_t  failsafe_status;
   boolean getSerialEnable() { return serial_enable; }
   
 private:
-  boolean use_rc, thrust_enable, serial_enable;
+  boolean use_rc, thrust_enable, serial_enable, rc_lost;
+  unsigned long rc_active_time;
   boolean iterate();
 
 Stream& _port;
