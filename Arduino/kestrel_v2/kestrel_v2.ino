@@ -73,6 +73,7 @@ void loop() {
   battery.doWork();
   gumstix.doWork();
   lights.doWork();
+  azimuth.doWork();
   
   // inform azimuth of e-stop and thrust limit settings
   azimuth.setEStop(roboteq.getStopSwitch());

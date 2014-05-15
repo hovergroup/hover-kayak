@@ -6,11 +6,15 @@
 #define azimuthCenter 1620
 #define azimuth60Range 587
 
+#define DegPerSec 60
+
 Azimuth::Azimuth() { 
   current_angle = 0;
   e_stop_on = true;
   limit_at_zero = false;
   power_off = true;
+  last_work_time = 0;
+  angle_estimate = 0;
 }
 
 void Azimuth::initialize() {
@@ -18,6 +22,26 @@ void Azimuth::initialize() {
   digitalWrite(servoPowerRelayPin, HIGH);
   azimuth_servo.attach(azimuthServoPinNumber);
   setAngle( 0 );
+}
+
+void Azimuth::doWork() {
+  // get time since last work
+  double dt = millis() - last_work_time;
+  
+  // update estimate
+  if (angle_estimate < current_angle) {
+    angle_estimate += dt*DegPerSec;
+    if (angle_estimate >= current_angle) {
+      angle_estimate = current_angle;
+    }
+  } else if (angle_estimate > current_angle) {
+    angle_estimate -= dt*DegPerSec;
+    if (angle_estimate <= current_angle) {
+      angle_estimate = current_angle;
+    }
+  }
+  
+  last_work_time = millis();
 }
 
 void Azimuth::setAngle( int angle ) {
