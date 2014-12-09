@@ -1,0 +1,9 @@
+//------------------------------------------------
+// pAcommsSimulator config block
+
+ProcessConfig = pAcommsSimulator
+{
+   AppTick   = 4
+   CommsTick = 4
+}
+

@@ -1,0 +1,9 @@
+//------------------------------------------------
+// pResourceMon config block
+
+ProcessConfig = pResourceMon
+{
+	IterateMode = 0 // regular iterate and comms
+	AppTick = 1
+}
+
