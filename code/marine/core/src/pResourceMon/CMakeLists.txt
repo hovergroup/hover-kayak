@@ -18,5 +18,6 @@ TARGET_LINK_LIBRARIES(pResourceMon
     mbutil
     m
     pthread
-    JoshUtils)
+    JoshUtils
+    boost_system)
 
