@@ -17,7 +17,7 @@ INCLUDE_DIRECTORIES(${LOCAL_LIBRARY_DIRS}
 #============================================================================
 
 ADD_SUBDIRECTORY(uPokeDBHex)
-ADD_SUBDIRECTORY(uPokeDBRandom)
+ADD_SUBDIRECTORY(uPokeRandom)
 
 IF(BUILD_SHORE_APPS)
 	ADD_SUBDIRECTORY(acommsParse)
