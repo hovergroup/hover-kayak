@@ -1,0 +1,9 @@
+//------------------------------------------------
+// iNSFModem config block
+
+ProcessConfig = iNSFModem
+{
+   AppTick   = 4
+   CommsTick = 4
+}
+

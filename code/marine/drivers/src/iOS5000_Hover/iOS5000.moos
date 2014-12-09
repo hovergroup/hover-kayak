@@ -1,0 +1,38 @@
+// MOOS file
+
+ServerHost = localhost
+ServerPort = 9000
+
+
+ProcessConfig = ANTLER
+{
+
+	MSBetweenLaunches	= 500
+
+	Run = MOOSDB		@ NewConsole = false
+	Run = iOS5000_Hover @ NewConsole = false
+//	Run = uXMS 			@ NewConsole = false
+}
+
+ProcessConfig = iOS5000_Hover
+{
+	AppTick   = 1
+
+	Port = /dev/ttyUSB2
+	Speed = 115200
+	
+	PreRotation = 0
+	FilterTimeConstant = 1
+}
+
+ProcessConfig = uXMS
+{
+	AppTick   = 4
+	CommsTick = 4
+	
+	display_time = true
+	display_source = true
+	
+	VAR=COMPASS_HEADING_UNFILTERED
+	VAR=COMPASS_HEADING_FILTERED
+}

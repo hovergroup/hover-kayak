@@ -1,0 +1,9 @@
+//------------------------------------------------
+// iAltimeter_cruzPro config block
+
+ProcessConfig = iAltimeter_cruzPro
+{
+   AppTick   = 4
+   CommsTick = 4
+}
+
