@@ -1,0 +1,34 @@
+/*
+ * hovergroup_proto
+ *        File: dcclExample.proto
+ *  Created on: Sep 10, 2013
+ *      Author: Josh Leighton
+ */
+
+import "goby/acomms/protobuf/dccl_option_extensions.proto";
+
+message VehicleStatus
+{
+  required double nav_x = 1;
+  required double nav_y = 2;
+  required HealthEnum health = 3;
+  enum HealthEnum { 
+    HEALTH_GOOD = 0; 
+    HEALTH_LOW_BATTERY = 1; 
+    HEALTH_ABORT = 2; 
+  } 
+}
+
+message VehicleStatusDCCL
+{ 
+  option (dccl.msg).id = 126;
+  option (dccl.msg).max_bytes = 64;
+  repeated double x_history = 1 [(dccl.field).min=-1000,
+                                 (dccl.field).max=1000,
+                                 (dccl.field).precision=2,
+                                 (dccl.field).max_repeat=4];
+  repeated double y_history = 2 [(dccl.field).min=-1000,
+                                 (dccl.field).max=1000,
+                                 (dccl.field).precision=2,
+                                 (dccl.field).max_repeat=4];
+}
