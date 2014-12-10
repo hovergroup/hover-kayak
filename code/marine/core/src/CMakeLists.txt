@@ -31,10 +31,10 @@ ADD_SUBDIRECTORY(pAckedCommsVehicle)
 ADD_SUBDIRECTORY(iAcommsDriver)
 
 IF(BUILD_SHORE_APPS)
-	ADD_SUBDIRECTORY(pWTStatusView)
-	ADD_SUBDIRECTORY(pAcommsSimulator)
-	ADD_SUBDIRECTORY(uTermCommand_Hover)
-	ADD_SUBDIRECTORY(pAckedCommsShoreside)
+    ADD_SUBDIRECTORY(pWTStatusView)
+    ADD_SUBDIRECTORY(pAcommsSimulator)
+    ADD_SUBDIRECTORY(uTermCommand_Hover)
+    ADD_SUBDIRECTORY(pAckedCommsShoreside)
 ENDIF(BUILD_SHORE_APPS)
 
 ##############################################################################

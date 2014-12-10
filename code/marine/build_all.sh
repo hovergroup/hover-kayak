@@ -36,6 +36,19 @@ cmake .
 make -j$NUM_THREADS
 
 cd ../core
+./build_proto.sh
+if $VEHICLE ; then
+    cmake -D BUILD_SHORE_APPS=OFF .
+else
+    cmake -D BUILD_SHORE_APPS=ON .
+fi
+make -j$NUM_THREADS
+
+cd ../drivers
+cmake .
+make -j$NUM_THREADS
+
+cd ../utils
 if $VEHICLE ; then
     cmake -D BUILD_SHORE_APPS=OFF .
 else

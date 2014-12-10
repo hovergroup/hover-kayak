@@ -1,14 +1,11 @@
 #===========================================================================
-# FILE:  moos-ivp-extend/CMakeLists.txt
-# DATE:  2011/09/07
-# INFO:  Top-level CMakeLists.txt file for the moos-ivp-extend project
-# NAME:  Maintained by Mike Benjamin - Original setup by Christian Convey
-#        Chris Gagner, and tips borrowed from Dave Billin
+# FILE:  hovergroup/code/marine/core/CMakeLists.txt
+# DATE:  2014/12/09
+# INFO:  Top-level CMakeLists.txt file for the marine/core project
+# NAME:  Maintained by Josh Leighton.  Original setup from 
+#        moos-ivp-extend and written my Mike Benjamin
 #===========================================================================
 
-
-# We are still supporting version 2.6. However, we will be upgrade to 
-# CMake 2.8 soon. Upgrade to version 2.8 if you can.
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
 PROJECT( IVP_EXTEND )
@@ -24,37 +21,35 @@ SET(BUILD_SHORE_APPS TRUE CACHE BOOL "Build shore apps")
 #=============================================================================
 
 find_path( HOVERGROUP_LIBRARIES
-			NAMES src/lib_HoverAcomms
-			PATHS "../libraries"
-			NO_DEFAULT_PATH
-)
+             NAMES src/lib_HoverAcomms
+             PATHS "../libraries"
+             NO_DEFAULT_PATH )
 
 FILE(GLOB HOVERGROUP_LIB_DIRECTORIES 
-    ${HOVERGROUP_LIBRARIES}/src/lib_*
-    ${HOVERGROUP_LIBRARIES}/src/protobuf)
+       ${HOVERGROUP_LIBRARIES}/src/lib_*
+       ${HOVERGROUP_LIBRARIES}/src/protobuf)
 
 set ( HOVERGROUP_INCLUDE_DIRECTORIES
-		${HOVERGROUP_LIB_DIRECTORIES}
-		${HOVERGROUP_LIBRARIES}/src/ )
-		
+        ${HOVERGROUP_LIB_DIRECTORIES}
+        ${HOVERGROUP_LIBRARIES}/src/ )
+        
 set ( HOVERGROUP_LIBRARY_PATH
-		${HOVERGROUP_LIBRARIES}/lib/ )
+        ${HOVERGROUP_LIBRARIES}/lib/ )
 
 #=============================================================================
 # Find the "goby" base directory
 #=============================================================================
 
-find_path( 	GOBY_BASE
-			NAMES DEPENDENCIES build.sh AUTHORS
-			PATHS "~/goby"
-			NO_DEFAULT_PATH
-)
+find_path( GOBY_BASE
+             NAMES DEPENDENCIES build.sh AUTHORS
+             PATHS "~/goby"
+             NO_DEFAULT_PATH )
 
 set( GOBY_INCLUDE_DIRS
-	${GOBY_BASE}/include )
-	
+       ${GOBY_BASE}/include )
+    
 set( GOBY_LIBRARY_PATH
-	${GOBY_BASE}/lib )
+       ${GOBY_BASE}/lib )
 
 #=============================================================================
 # Find the "moos-ivp" base directory
@@ -62,10 +57,10 @@ set( GOBY_LIBRARY_PATH
 
 # Search for the moos-ivp folder
 find_path( MOOSIVP_SOURCE_TREE_BASE
-           NAMES build-ivp.sh build-moos.sh configure-ivp.sh
-           PATHS "../moos-ivp" "../../moos-ivp" "../../moos-ivp/trunk/" "../moos-ivp/trunk/" "~/moos-ivp"
-           DOC "Base directory of the MOOS-IvP source tree"
-           NO_DEFAULT_PATH
+             NAMES build-ivp.sh build-moos.sh configure-ivp.sh
+             PATHS "../moos-ivp" "../../moos-ivp" "../../moos-ivp/trunk/" "../moos-ivp/trunk/" "~/moos-ivp"
+             DOC "Base directory of the MOOS-IvP source tree"
+             NO_DEFAULT_PATH
 )
 
 if (NOT MOOSIVP_SOURCE_TREE_BASE)
@@ -93,15 +88,15 @@ find_package(MOOS 10)
 find_package(MOOSGeodesy)
 
 LINK_DIRECTORIES(       ${IVP_LIBRARY_DIRS}
-    			        ${GOBY_LIBRARY_PATH}
-    			        ${HOVERGROUP_LIBRARY_PATH}	)
+                        ${GOBY_LIBRARY_PATH}
+                        ${HOVERGROUP_LIBRARY_PATH}    )
 
-INCLUDE_DIRECTORIES(	${MOOS_INCLUDE_DIRS}
+INCLUDE_DIRECTORIES(    ${MOOS_INCLUDE_DIRS}
                         ${MOOS_DEPEND_INCLUDE_DIRS}
                         ${MOOSGeodesy_INCLUDE_DIRS}
-            			${GOBY_INCLUDE_DIRS}
-            			${IVP_INCLUDE_DIRS}
-            			${HOVERGROUP_INCLUDE_DIRECTORIES}	)
+                        ${GOBY_INCLUDE_DIRS}
+                        ${IVP_INCLUDE_DIRS}
+                        ${HOVERGROUP_INCLUDE_DIRECTORIES}    )
 
 
 #=============================================================================
