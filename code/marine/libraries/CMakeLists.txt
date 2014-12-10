@@ -17,8 +17,6 @@ include(FindProtobuf)
 find_package(Protobuf REQUIRED)
 include_directories(${PROTOBUF_INCLUDE_DIR})
 
-SET(BUILD_SHORE_APPS TRUE CACHE BOOL "Build shore apps")
-
 set (BOOST_OVER_146 0)
 OPTION (BOOST_146 "boost v. at least 1.46" TRUE)
 if ( BOOST_146 )
@@ -30,17 +28,17 @@ CONFIGURE_FILE(src/lib_JoshUtils/config.h.in src/lib_JoshUtils/config.h)
 # Find the "goby" base directory
 #=============================================================================
 
-find_path( 	GOBY_BASE
-			NAMES DEPENDENCIES build.sh AUTHORS
-			PATHS "~/goby" "../../../goby"
-			NO_DEFAULT_PATH
+find_path(     GOBY_BASE
+            NAMES DEPENDENCIES build.sh AUTHORS
+            PATHS "~/goby" "../../../goby"
+            NO_DEFAULT_PATH
 )
 
 set( GOBY_INCLUDE_DIRS
-	${GOBY_BASE}/include )
-	
+    ${GOBY_BASE}/include )
+    
 set( GOBY_LIBRARY_PATH
-	${GOBY_BASE}/lib )
+    ${GOBY_BASE}/lib )
 
 #=============================================================================
 # Find the "moos-ivp" base directory
@@ -76,13 +74,13 @@ FILE(GLOB IVP_LIBRARY_DIRS ${MOOSIVP_SOURCE_TREE_BASE}/lib )
 find_package(MOOS 10)
 find_package(MOOSGeodesy)
 
-INCLUDE_DIRECTORIES(	${MOOS_INCLUDE_DIRS}
+INCLUDE_DIRECTORIES(    ${MOOS_INCLUDE_DIRS}
                         ${MOOS_DEPEND_INCLUDE_DIRS}
                         ${MOOSGeodesy_INCLUDE_DIRS}
-   						${GOBY_INCLUDE_DIRS}
-   						${IVP_INCLUDE_DIRS}
-   						/usr/include/qt4/			)
-   						
+                           ${GOBY_INCLUDE_DIRS}
+                           ${IVP_INCLUDE_DIRS}
+                           /usr/include/qt4/            )
+                           
 LINK_DIRECTORIES( ${IVP_LIBRARY_DIRS}
                   ${GOBY_LIBRARY_PATH} )
 
