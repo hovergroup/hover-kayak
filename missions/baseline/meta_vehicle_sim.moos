@@ -1,0 +1,33 @@
+ServerHost = localhost
+ServerPort = $(VPORT)
+Community  = $(VNAME)
+
+#include ../../trunk/plugs/plug_origin_warp.moos
+  
+//------------------------------------------------------------
+Processconfig = ANTLER
+{
+  MSBetweenLaunches = 200
+   
+  Run = MOOSDB             @ NewConsole = false
+  Run = pShare             @ NewConsole = false
+  Run = uSimMarine         @ NewConsole = false
+  Run = pLogger            @ NewConsole = false
+  Run = pProtoReporter     @ NewConsole = false
+  Run = pMarinePID_Hover   @ NewConsole = false
+  Run = pHelmIvP           @ NewConsole = false
+  Run = pEchoVar           @ NewConsole = false
+  Run = pResourceMon       @ NewConsole = false
+  Run = pAckedCommsVehicle @ NewConsole = false
+}
+
+#include ../../trunk/plugs/plug_iKST.moos
+#include ../../trunk/plugs/plug_uSimMarine.moos
+#include ../../trunk/plugs/plug_pShareV.moos
+#include ../../trunk/plugs/plug_pLogger.moos
+#include ../../trunk/plugs/plug_pProtoReporter.moos
+#include ../../trunk/plugs/plug_pMarinePID_Hover.moos
+#include ../../trunk/plugs/plug_pHelmIvP.moos
+#include ../../trunk/plugs/plug_pEchoVar.moos
+#include ../../trunk/plugs/plug_pResourceMon.moos
+#include ../../trunk/plugs/plug_pAckedCommsVehicle.moos

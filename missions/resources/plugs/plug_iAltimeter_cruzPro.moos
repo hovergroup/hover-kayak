@@ -1,0 +1,8 @@
+ProcessConfig = iAltimeter_cruzPro
+{
+    IterateMode = 0    // regular iterate and mail
+    AppTick     = 1
+  
+    PORT_NAME = $(TRITECHPORT)
+    BAUD_RATE = 4800
+}

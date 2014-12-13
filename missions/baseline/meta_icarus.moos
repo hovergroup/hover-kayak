@@ -1,0 +1,55 @@
+ServerHost = $(VHOST)
+ServerPort = $(VPORT)
+Community  = $(VNAME)
+
+#include ../../trunk/plugs/plug_origin_warp.moos
+  
+//------------------------------------------------------------
+Processconfig = ANTLER
+{
+  MSBetweenLaunches = 200
+   
+  Run = MOOSDB                 @ NewConsole = false
+  Run = pShare                 @ NewConsole = false
+  Run = pLogger                @ NewConsole = false
+  Run = pProtoReporter         @ NewConsole = false
+  Run = iRTKNAVI               @ NewConsole = false
+  Run = iGPS_Hover             @ NewConsole = false
+  Run = pEchoVar               @ NewConsole = false
+  Run = iAcommsDriver          @ NewConsole = false
+  Run = pNavManager            @ NewConsole = false
+  Run = iIcarus                @ NewConsole = false
+  Run = uTimerScript           @ NewConsole = false ~uTimerScript_config
+  Run = pResourceMon           @ NewConsole = false
+  Run = pAckedCommsVehicle     @ NewConsole = false
+  Run = pScheduledTransmit     @ NewConsole = false
+}
+
+ProcessConfig = uTimerScript_Config
+{
+  AppTick = 4
+  CommsTick = 4
+    
+  event = var=NAV_HEADING,val=0,time=1
+  event = quit, time=2
+}
+
+ProcessConfig = pProtoReporter
+{
+    IterateMode = 0    // regular iterate and mail
+    AppTick     = 1
+  
+    PLATFORM_TYPE = ICARUS
+}
+
+#include ../../trunk/plugs/plug_pShareV.moos
+#include ../../trunk/plugs/plug_pLogger.moos
+#include ../../trunk/plugs/plug_pEchoVar.moos
+#include ../../trunk/plugs/plug_iRTKNAVI.moos
+#include ../../trunk/plugs/plug_iAcommsDriver.moos
+#include ../../trunk/plugs/plug_pNavManager.moos
+#include ../../trunk/plugs/plug_iGPS_Hover.moos
+#include ../../trunk/plugs/plug_iIcarus.moos
+#include ../../trunk/plugs/plug_pResourceMon.moos
+#include ../../trunk/plugs/plug_pAckedCommsVehicle.moos
+#include ../../trunk/plugs/plug_pScheduledTransmit.moos

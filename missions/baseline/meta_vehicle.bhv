@@ -1,0 +1,97 @@
+initialize   MISSION_MODE = INACTIVE     // INACTIVE, GOTO, STATION-KEEP, RETURN
+initialize   MOOS_MANUAL_OVERRIDE=true   // true, false
+initialize   GOSTAY = true               // true, false
+
+Behavior = BHV_Waypoint
+{ 
+    name       = goto_and_station
+    pwt        = 100
+    condition  = MISSION_MODE = GOTO
+    condition  = GOSTAY = true
+    endflag    = MISSION_MODE = STATION-KEEP
+    perpetual  = true
+    updates    = GOTO_UPDATES
+
+    lead          = 15
+    lead_to_start = true
+    lead_damper   = 1
+    speed         = $(CRUISESPEED)
+    radius        = 4.0
+    slip_radius   = 10.0
+    points        = $(RETURN_PT)
+    repeat        = 1
+}
+
+Behavior = BHV_Waypoint
+{ 
+    name       = goto_and_return
+    pwt        = 100
+    condition  = MISSION_MODE = GOTO
+    condition  = GOSTAY = false
+    endflag    = MISSION_MODE = RETURN
+    perpetual  = true
+    updates    = GOTO_UPDATES
+
+    lead          = 15
+    lead_to_start = true
+    lead_damper   = 1
+    speed         = $(CRUISESPEED)
+    radius        = 4.0
+    slip_radius   = 10.0
+    points        = $(RETURN_PT)
+    repeat        = 1
+}
+
+Behavior = BHV_Waypoint
+{
+    name       = return
+    pwt        = 100
+    condition  = MISSION_MODE = RETURN
+    endflag    = MISSION_MODE = STATION-KEEP
+    perpetual  = true
+
+    lead          = 15
+    lead_to_start = true
+    lead_damper   = 1
+    speed      = $(CRUISESPEED)
+    radius     = 2.0
+    nm_radius  = 8.0
+    points     = $(RETURN_PT)
+}
+
+Behavior = BHV_StationKeep
+{
+    name             = station
+    pwt              = 100
+    condition        = MISSION_MODE = STATION-KEEP
+    center_activate  = true
+    
+    station_pt    = 0,0
+    inner_radius  = 5
+    outer_radius  = 10
+    outer_speed   = $(CRUISESPEED)
+    transit_speed = $(CRUISESPEED)
+    swing_time    = 3
+}
+
+Behavior = BHV_ConstantSpeed
+{
+    name = constant_speed
+    condition = MISSION_MODE = CONSTANT
+    updates = CONST_SPEED_UPDATES
+
+    duration = no-time-limit
+
+    speed = $(CRUISESPEED)
+}
+
+Behavior = BHV_ConstantHeading
+{
+    name = constant_heading
+    condition = MISSION_MODE = CONSTANT
+    updates = CONST_HEADING_UPDATES
+
+    duration = no-time-limit
+
+    heading = 150
+}

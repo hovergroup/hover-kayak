@@ -1,0 +1,13 @@
+ProcessConfig = pLogger
+{
+    IterateMode = 0    // regular iterate and mail
+    AppTick     = 10
+
+    File            = LOG_%(VNAME)
+    PATH            = /home/josh/logs/
+    AsyncLog        = true
+    FileTimeStamp   = true
+    WildCardLogging = true
+
+    WildCardOmitPattern = PLOGGER_STATUS
+}

@@ -1,0 +1,39 @@
+ProcessConfig = pMarinePID_Hover
+{
+    IterateMode = 0    // regular iterate and mail
+    AppTick     = 10
+
+    Verbose       = false
+    DEPTH_CONTROL = false
+    ACTIVE_START  = true
+    MAXRUDDER     = 45
+    MAXTHRUST     = 100
+
+    // SPEED_FACTOR
+    //    - A non-zero SPEED_FACTOR overrides use of SPEED_PID
+    //    - Will set DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
+    SPEED_FACTOR  = 30
+    // 25-30 for no modem
+    // 40 with modem
+
+    // Yaw PID controller
+    YAW_PID_KP             = 0.45
+    YAW_PID_KD             = 0.3
+    YAW_PID_KI             = 0.01
+    YAW_PID_INTEGRAL_LIMIT = 500
+    YAW_PID_TAU            = 1
+
+    // Speed PID controller
+    SPEED_PID_KP             = 0.0
+    SPEED_PID_KD             = 0.0
+    SPEED_PID_KI             = 4
+    SPEED_PID_INTEGRAL_LIMIT = 2.5
+    
+    SPEED_CONTROLLER = fit_pid
+    // factor, pid, fit_pid
+    
+    SPEED_SLOPE = 60.6
+    SPEED_OFFSET = -1.21
+    ANGLE_LIMIT = 25
+    TIME_DELAY = 5
+}

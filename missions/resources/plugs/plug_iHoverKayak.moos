@@ -1,0 +1,10 @@
+ProcessConfig = iHoverKayak
+{
+    IterateMode = 1    // comms driven iterate and mail
+    AppTick     = 20   // iterate lower bound
+    MaxAppTick  = 0    // no limit
+   
+    INVERT_RUDDER = false
+    RUDDER_OFFSET = $(RUDDER_OFFSET)
+    PORT_NAME = $(ARDUINO_PORT)
+}

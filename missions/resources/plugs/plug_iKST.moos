@@ -1,0 +1,19 @@
+ProcessConfig = iKST
+{
+    IterateMode = 0    // regular iterate and mail
+    AppTick     = 4
+
+    output_path = "/home/josh/kst_$(VNAME).csv"
+
+    LOG = NAV_X
+    LOG = NAV_Y
+    LOG = NAV_HEADING
+    LOG = NAV_SPEED
+    LOG = DESIRED_HEADING
+    LOG = DESIRED_SPEED
+    LOG = ARDUINO_RUDDER
+    LOG = ARDUINO_THRUST
+    LOG = COMPASS_ROLL
+    LOG = COMPASS_PITCH
+    LOG = ALTIMETER_DEPTH
+}

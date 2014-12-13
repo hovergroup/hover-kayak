@@ -1,0 +1,39 @@
+ProcessConfig = uTermCommand_Hover
+{
+    AppTick = 2
+    CommsTick = 2
+
+    // nostromo goto
+    CMD = NG --> MISSION_MODE_NOSTROMO --> GOTO
+    CMD = NG --> MOOS_MANUAL_OVERRIDE_NOSTROMO --> false
+    // nostromo station
+    CMD = NS --> MISSION_MODE_NOSTROMO --> STATION-KEEP
+    CMD = NS --> MOOS_MANUAL_OVERRIDE_NOSTROMO --> false
+    // nostromo all-stop
+    CMD = NA --> MISSION_MODE_NOSTROMO --> INACTIVE
+    CMD = NA --> MOOS_MANUAL_OVERRIDE_NOSTROMO --> true
+
+    // silvana goto
+    CMD = SG --> MISSION_MODE_SILVANA --> GOTO
+    CMD = SG --> MOOS_MANUAL_OVERRIDE_SILVANA --> false
+    // silvana station
+    CMD = SS --> MISSION_MODE_SILVANA --> STATION-KEEP
+    CMD = SS --> MOOS_MANUAL_OVERRIDE_SILVANA --> false
+    // silvana all-stop
+    CMD = SA --> MISSION_MODE_SILVANA --> INACTIVE
+    CMD = SA --> MOOS_MANUAL_OVERRIDE_SILVANA --> true
+
+    // kestrel goto
+    CMD = KG --> MISSION_MODE_KESTREL --> GOTO
+    CMD = KG --> MOOS_MANUAL_OVERRIDE_KESTREL --> false
+    // kestrel station
+    CMD = KS --> MISSION_MODE_KESTREL --> STATION-KEEP
+    CMD = KS --> MOOS_MANUAL_OVERRIDE_KESTREL --> false
+    // kestrel all-stop
+    CMD = KA --> MISSION_MODE_KESTREL --> INACTIVE
+    CMD = KA --> MOOS_MANUAL_OVERRIDE_KESTREL --> true
+    
+    // scheduled transmits
+    CMD = ENABLE_TRANSMITS --> SCHEDULED_TRANSMITS_ALL --> on
+    CMD = DISABLE_TRANSMITS --> SCHEDULED_TRANSMITS_ALL --> off
+}

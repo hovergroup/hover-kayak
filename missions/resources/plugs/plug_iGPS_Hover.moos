@@ -1,0 +1,13 @@
+ProcessConfig = iGPS_Hover
+{
+    IterateMode = 0    // regular iterate and mail
+    AppTick     = 20
+  
+    //PORT_NAME = $(GPSPORT)
+    //BAUD_RATE = $(GPSBAUD)
+    
+    TCP_SERVER = localhost
+    TCP_PORT = 50000
+    
+    USE_TCP = true
+}

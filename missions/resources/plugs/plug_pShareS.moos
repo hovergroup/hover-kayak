@@ -1,0 +1,12 @@
+ProcessConfig = pShare
+{
+    IterateMode = 0    // regular iterate and mail
+    AppTick     = 4    // iterate lower bound
+  
+    output = ACKEDCOMMS_TRANSMIT_$(VNAME4)->ACKEDCOMMS_TRANSMIT:$(VHOST4):$(LPORT4)
+    output = ACKEDCOMMS_TRANSMIT_$(VNAME3)->ACKEDCOMMS_TRANSMIT:$(VHOST3):$(LPORT3)
+    output = ACKEDCOMMS_TRANSMIT_$(VNAME2)->ACKEDCOMMS_TRANSMIT:$(VHOST2):$(LPORT2)
+    output = ACKEDCOMMS_TRANSMIT_$(VNAME1)->ACKEDCOMMS_TRANSMIT:$(VHOST1):$(LPORT1)
+  
+    input = route=localhost:$(LPORT)
+}

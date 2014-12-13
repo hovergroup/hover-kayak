@@ -1,0 +1,8 @@
+ProcessConfig = pEchoVar
+{
+    IterateMode = 1    // comms driven iterate and mail
+    AppTick     = 4    // iterate lower bound
+    MaxAppTick  = 0    // no limit
+
+    Echo = MOOS_MANUAL_OVERRIDE -> MOOS_MANUAL_OVERIDE
+}
