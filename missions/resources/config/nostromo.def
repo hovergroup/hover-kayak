@@ -1,0 +1,11 @@
+// DO NOT MODIFY - nostromo hardware configuration options
+#ifndef VHOST
+    #define VHOST 192.168.1.103
+#endif
+#define VNAME NOSTROMO
+#define VPORT 9300
+#define LPORT 9301
+#define MODEMPORT /dev/ttyUSB1
+#define OS5000PORT /dev/ttyUSB2
+#define ARDUINO_PORT /dev/ttyO1
+#define TRITECHPORT /dev/ttyUSB0

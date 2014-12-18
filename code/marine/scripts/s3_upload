@@ -1,0 +1,12 @@
+#!/bin/bash
+
+FOLDERDATE=$(date +%Y_%m_%d)
+
+
+if [ -d "/media/Data" ]; then
+    cd /media/Data
+else
+    cd $HOME/logfetch
+fi
+
+aws s3 cp ${FOLDERDATE} s3://kayak_data/${FOLDERDATE} --recursive

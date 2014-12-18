@@ -1,0 +1,8 @@
+#ifndef VHOST
+    #define VHOST 192.168.1.102
+#endif
+#define VNAME ICARUS
+#define VPORT 9200
+#define LPORT 9201
+#define MODEMPORT /dev/ttyUSB1
+#define ARDUINO_PORT /dev/ttyO1

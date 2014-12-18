@@ -1,0 +1,3 @@
+#define ACOMMSID 2
+#define TransmitOffset 0
+#define TransmitPeriod 40

@@ -1,0 +1,102 @@
+#!/bin/bash
+
+MOOSDATE=$(date +%-d_%-m_%Y)
+FOLDERDATE=$(date +%Y_%m_%d)
+
+if [ -d "/media/Data" ]; then
+    cd /media/Data
+else
+    mkdir $HOME/logfetch
+    cd $HOME/logfetch
+fi
+
+if [ -d $FOLDERDATE ]; then
+    echo "Directory already exists"
+else
+    echo "Creating directory"
+    mkdir $FOLDERDATE
+fi
+
+cd ${FOLDERDATE}
+
+LOCAL="no"
+VEHICLE=""
+HELP="no"
+
+#-------------------------------------------------------
+#  Part 1: Process command-line arguments
+#-------------------------------------------------------
+
+for ARGI; do
+    UNDEFINED_ARG=$ARGI
+    if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
+    HELP="yes"
+    UNDEFINED_ARG=""
+    fi
+    if [ "${ARGI}" = "--local" ] ; then
+    LOCAL="yes"
+    UNDEFINED_ARG=""
+    fi
+    if [ "${ARGI:0:9}" = "--vehicle" ] ; then
+    VEHICLE="${ARGI#--vehicle=*}"
+    UNDEFINED_ARG=""
+    fi
+    if [ "${UNDEFINED_ARG}" != "" ] ; then
+    BAD_ARGS=$UNDEFINED_ARG
+    fi
+done
+
+if [ "${HELP}" = "yes" ] ; then
+	printf "Usage: logfetch --vehicle=[VEHICLE] [options]  \n"
+	printf "Options:                                       \n"
+	printf "   --local     Specify for fetching locally,   \n"
+	printf "               without ssh.                    \n"
+	exit 0
+fi
+
+if [ "${VEHICLE}" = "" ] ; then
+    printf "Must define a vehicle\n"
+    exit 0
+fi
+
+if [ "${LOCAL}" = "no" ] ; then
+
+#-------------------------------------------------------
+#  Part 2: Remote fetch
+#-------------------------------------------------------
+
+#TARNAME="LOG_${VEHICLE}_${MOOSDATE}.tar.gz"
+
+#echo "Connecting to host ${VEHICLE}"
+#ssh josh@${VEHICLE} <<ENDSSH
+
+#cd logs
+
+#tar cvfz ${TARNAME} *_${VEHICLE}_${MOOSDATE}*
+
+#ENDSSH
+
+#scp josh@${VEHICLE}:/home/josh/logs/${TARNAME} ${TARNAME}
+mkdir ${VEHICLE}
+rsync -r --progress josh@${VEHICLE}:/home/josh/logs/*_${VEHICLE}_${MOOSDATE}* ${VEHICLE}
+TARNAME="LOG_${VEHICLE}_${MOOSDATE}.tar.bz2"
+tar cvfj ${TARNAME} ${VEHICLE}/*
+rm -r ${VEHICLE}
+
+else
+#-------------------------------------------------------
+#  Part 2: Local fetch
+#-------------------------------------------------------
+
+TARNAME="LOG_${VEHICLE}_${MOOSDATE}.tar.bz2"
+
+if test $(find /home/josh/logs -maxdepth 1 -name *_${VEHICLE}_${MOOSDATE}* -print -quit); then
+    printf "Found log files.\n"
+else
+    echo "No log folders found."
+    exit 0
+fi
+
+tar cvfj ${TARNAME} /home/josh/logs/*_${VEHICLE}_${MOOSDATE}*
+
+fi

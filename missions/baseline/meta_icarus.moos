@@ -1,8 +1,12 @@
+#include ../resources/config/shoreside.def
+#include ../resources/config/icarus.def
+#include ../resources/config/icarus_options.def
+
 ServerHost = $(VHOST)
 ServerPort = $(VPORT)
 Community  = $(VNAME)
 
-#include ../../trunk/plugs/plug_origin_warp.moos
+#include ../resources/plugs/plug_origin_warp.moos
   
 //------------------------------------------------------------
 Processconfig = ANTLER
@@ -42,14 +46,14 @@ ProcessConfig = pProtoReporter
     PLATFORM_TYPE = ICARUS
 }
 
-#include ../../trunk/plugs/plug_pShareV.moos
-#include ../../trunk/plugs/plug_pLogger.moos
-#include ../../trunk/plugs/plug_pEchoVar.moos
-#include ../../trunk/plugs/plug_iRTKNAVI.moos
-#include ../../trunk/plugs/plug_iAcommsDriver.moos
-#include ../../trunk/plugs/plug_pNavManager.moos
-#include ../../trunk/plugs/plug_iGPS_Hover.moos
-#include ../../trunk/plugs/plug_iIcarus.moos
-#include ../../trunk/plugs/plug_pResourceMon.moos
-#include ../../trunk/plugs/plug_pAckedCommsVehicle.moos
-#include ../../trunk/plugs/plug_pScheduledTransmit.moos
+#include ../resources/plugs/plug_pShareV.moos
+#include ../resources/plugs/plug_pLogger.moos
+#include ../resources/plugs/plug_pEchoVar.moos
+#include ../resources/plugs/plug_iRTKNAVI.moos
+#include ../resources/plugs/plug_iAcommsDriver.moos
+#include ../resources/plugs/plug_pNavManager.moos
+#include ../resources/plugs/plug_iGPS_Hover.moos
+#include ../resources/plugs/plug_iIcarus.moos
+#include ../resources/plugs/plug_pResourceMon.moos
+#include ../resources/plugs/plug_pAckedCommsVehicle.moos
+#include ../resources/plugs/plug_pScheduledTransmit.moos

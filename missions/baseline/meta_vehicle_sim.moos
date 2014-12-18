@@ -1,33 +1,50 @@
-ServerHost = localhost
+#include ../resources/config/shoreside.def
+
+#ifdef KESTREL
+    #include ../resources/config/kestrel.def
+    #include ../resources/config/kestrel_options.def
+#elseifdef SILVANA
+    #include ../resources/config/silvana.def
+    #include ../resources/config/silvana_options.def
+#elseifdef NOSTROMO
+    #include ../resources/config/nostromo.def
+    #include ../resources/config/nostromo_options.def
+#endif
+
+ServerHost = $(VHOST)
 ServerPort = $(VPORT)
 Community  = $(VNAME)
 
-#include ../../trunk/plugs/plug_origin_warp.moos
+#include ../resources/plugs/plug_origin_warp.moos
   
 //------------------------------------------------------------
 Processconfig = ANTLER
 {
   MSBetweenLaunches = 200
    
-  Run = MOOSDB             @ NewConsole = false
-  Run = pShare             @ NewConsole = false
-  Run = uSimMarine         @ NewConsole = false
-  Run = pLogger            @ NewConsole = false
-  Run = pProtoReporter     @ NewConsole = false
-  Run = pMarinePID_Hover   @ NewConsole = false
-  Run = pHelmIvP           @ NewConsole = false
-  Run = pEchoVar           @ NewConsole = false
-  Run = pResourceMon       @ NewConsole = false
-  Run = pAckedCommsVehicle @ NewConsole = false
+  Run = MOOSDB                 @ NewConsole = false
+  Run = pShare                 @ NewConsole = false
+  Run = uSimMarine             @ NewConsole = false
+  Run = pLogger                @ NewConsole = false
+  Run = pProtoReporter         @ NewConsole = false
+  Run = pMarinePID_Hover       @ NewConsole = false
+  Run = pHelmIvP               @ NewConsole = false
+  Run = pEchoVar               @ NewConsole = false
+  Run = iAcommsDriver          @ NewConsole = false
+  Run = pResourceMon           @ NewConsole = false
+  Run = pAckedCommsVehicle     @ NewConsole = false
+  Run = pScheduledTransmit     @ NewConsole = false
 }
 
-#include ../../trunk/plugs/plug_iKST.moos
-#include ../../trunk/plugs/plug_uSimMarine.moos
-#include ../../trunk/plugs/plug_pShareV.moos
-#include ../../trunk/plugs/plug_pLogger.moos
-#include ../../trunk/plugs/plug_pProtoReporter.moos
-#include ../../trunk/plugs/plug_pMarinePID_Hover.moos
-#include ../../trunk/plugs/plug_pHelmIvP.moos
-#include ../../trunk/plugs/plug_pEchoVar.moos
-#include ../../trunk/plugs/plug_pResourceMon.moos
-#include ../../trunk/plugs/plug_pAckedCommsVehicle.moos
+#include ../resources/plugs/plug_iKST.moos
+#include ../resources/plugs/plug_uSimMarine.moos
+#include ../resources/plugs/plug_pShareV.moos
+#include ../resources/plugs/plug_pLogger.moos
+#include ../resources/plugs/plug_pProtoReporter.moos
+#include ../resources/plugs/plug_pMarinePID_Hover.moos
+#include ../resources/plugs/plug_pHelmIvP.moos
+#include ../resources/plugs/plug_pEchoVar.moos
+#include ../resources/plugs/plug_pResourceMon.moos
+#include ../resources/plugs/plug_pAckedCommsVehicle.moos
+#include ../resources/plugs/plug_pScheduledTransmit.moos
+#include ../resources/plugs/plug_iAcommsDriver.moos
