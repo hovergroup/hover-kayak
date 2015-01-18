@@ -4,13 +4,13 @@ set -e
 GOBY_URL="http://bazaar.launchpad.net/~goby-dev/goby/2.0/"
 
 HELP=false
-DISTCC_HOST="192.168.1.100"
 NUM_THREADS=1
 INTERACTIVE=true
-VEHICLE=false
+INSTALL_DEPENDENCIES=false
+DEPENDENCY_TYPE=""
 
 ynprompt() {
-    printf "$1 "
+    echo -e "\e[93m$1 \e[0m"
     read -n 1 -r
     if [[ $REPLY =~ ^[Yy]$ ]] ; then
         printf "\n"
@@ -29,28 +29,28 @@ for ARGI; do
     elif [ "${ARGI:0:2}" = "-j" ] ; then
         NUM_THREADS="${ARGI#-j*}"
         UNDEFINED_ARG=""
-    elif [ "${ARGI:0:14}" = "--distcc_host=" ] ; then
-        DISTCC_HOST="${ARGI#--distcc_host=*}"
-        UNDEFINED_ARG=""
-    elif [ "${ARGI}" = "--vehicle" -o "${ARGI}" = "-v" ] ; then
-        VEHICLE="true"
-        UNDEFINED_ARG=""
+    elif [ "${ARGI}" = "--debian-dep" ] ; then
+        INSTALL_DEPENDENCIES=true
+        DEPENDENCY_TYPE=debian
+    elif [ "${ARGI}" = "--ubuntu-dep" ] ; then
+        INSTALL_DEPENDENCIES=true
+        DEPENDENCY_TYPE=ubuntu
     else
-        START_DIRECTORY=${ARGI}
+        START_DIRECTORY=${ARGI%/}
     fi
 done
 
-if $HELP ; then
-    printf "Usage: install_goby.sh [location] [-j4] [options]                  \n"
-    printf "Options:                                                           \n"
-    printf "  --distcc_host=[ip]     set distcc host (default 192.168.1.100)   \n"
-    printf "  --vehicle, -v          install for vehicle (no gui or shore apps)\n"
+if [ $HELP = "true" ] || [ "$#" = 0 ] ; then
+    printf "Usage: install_goby.sh [location] [-j4] [options]   \n"
+    printf "Options:                                            \n"
+    printf "  --ubuntu-dep    install dependencies for ubuntu   \n"
+    printf "  --debian-dep    install dependencies for debian   \n"
     exit 1;
 fi
 
 # if directory does not exist, do fresh checkout
 if [ ! -d $START_DIRECTORY/goby ] ; then
-    bzr checkout $GOBY_URL $START_DIRECTORY/goby
+    bzr checkout --lightweight $GOBY_URL $START_DIRECTORY/goby
 fi
 cd $START_DIRECTORY/goby
 
@@ -67,15 +67,15 @@ if [ -z "${BZR_URL}" ] ; then
     
     # fresh checkout
     cd ..; rm -rf goby
-    bzr checkout $GOBY_URL goby
+    bzr checkout --lightweight $GOBY_URL goby
     cd goby
 fi
 
 # check that url is correct
-if [ ! "${BZR_URL}" = "${GOBY_URL}" ] ; then
+if [ ! "${BZR_URL}" = " ${GOBY_URL}" ] ; then
     SWITCH=true
     if $INTERACTIVE ; then
-    if ! ynprompt "BZR URL is $BZR_URL. \nWipe directory and switch to ${GOBY_URL}? [y/N]"; then
+    if ! ynprompt "BZR URL is $BZR_URL \nWipe directory and switch to ${GOBY_URL}? [y/N]"; then
         SWITCH=false
     fi
     fi
@@ -83,16 +83,19 @@ if [ ! "${BZR_URL}" = "${GOBY_URL}" ] ; then
     # do fresh checkout
     if $SWITCH ; then
     cd ..; rm -rf goby
-    bzr checkout $GOBY_URL goby
+    bzr checkout --lightweight $GOBY_URL goby
     cd goby
     fi
 fi
 
 bzr up
 
-if $COMPLETE_INSTALL ; then
-    sudo ./DEPENDENCIES ubuntu
+if $INSTALL_DEPENDENCIES ; then
+    sudo ./DEPENDENCIES $DEPENDENCY_TYPE
     sudo apt-get install libgmp3-dev
 fi
-cmake -D build_apps=OFF -D build_moos=OFF $VEHICLE_CMAKE_ARGS .
+
+cmake -D build_apps=OFF -D build_moos=OFF .
 make -j$NUM_THREADS
+
+echo -e "\e[93mDone.\e[0m"

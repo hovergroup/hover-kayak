@@ -26,7 +26,6 @@ done
 if $HELP ; then
     printf "Usage: build_all.sh [location] [-j4] [options]                     \n"
     printf "Options:                                                           \n"
-    printf "  --distcc_host=[ip]     set distcc host (default 192.168.1.100)   \n"
     printf "  --vehicle, -v          install for vehicle (no gui or shore apps)\n"
     exit 1;
 fi
