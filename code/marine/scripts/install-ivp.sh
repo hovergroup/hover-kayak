@@ -96,7 +96,7 @@ else
 fi
 
 # pull out the svn url
-SVN_URL=$(svn info | sed -n 3p | sed 's/URL: //g')
+SVN_URL=$(svn info | grep URL | sed -n 1p | sed 's/URL: //g')
 
 # check that we got a url - is this an svn directory?
 if [ -z "${SVN_URL}" ] ; then
