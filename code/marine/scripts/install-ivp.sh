@@ -150,8 +150,8 @@ if [ -z "$SVN_VAL" ] ; then
 fi
 
 # build
-cd ivp/src
 if $VEHICLE ; then
+    cd src
     # make modifications to CMakeLists to avoid building as much
     COMMENT_LINES=(lib_ufield
                    lib_ufld_hazards
@@ -184,6 +184,7 @@ if $VEHICLE ; then
     cmake -D IVP_BUILD_GUI_CODE=OFF $VEHICLE_CMAKE_ARGS .
     make -j$NUM_THREADS
 else
+    cd ivp/src
     cmake -D IVP_BUILD_GUI_CODE=ON .
     make -j$NUM_THREADS
 fi
