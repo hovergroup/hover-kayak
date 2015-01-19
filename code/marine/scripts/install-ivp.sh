@@ -64,6 +64,9 @@ if [ ! -d $START_DIRECTORY ] ; then
     exit 1;
 fi
 
+cd $START_DIRECTORY
+START_DIRECTORY=$(pwd)
+
 # check that MOOS install exists
 if [ ! -d $MOOS_PATH/core-moos ] ; then
     printf "$MOOS_PATH/core-moos does not exist - where is MOOS?\n"
@@ -98,7 +101,7 @@ SVN_URL=$(svn info | sed -n 3p | sed 's/URL: //g')
 # check that we got a url - is this an svn directory?
 if [ -z "${SVN_URL}" ] ; then
     if $INTERACTIVE ; then
-        currentdir=pwd
+        currentdir=$(pwd)
         if ! ynprompt "$currentdir is not an svn directory, wipe and fresh checkout? [y/N]"; then
             exit 1
         fi

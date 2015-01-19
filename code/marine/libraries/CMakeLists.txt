@@ -30,7 +30,7 @@ CONFIGURE_FILE(src/lib_JoshUtils/config.h.in src/lib_JoshUtils/config.h)
 
 find_path(     GOBY_BASE
             NAMES DEPENDENCIES build.sh AUTHORS
-            PATHS "~/goby" "../../../goby"
+            PATHS "~/goby" "../../../../goby"
             NO_DEFAULT_PATH
 )
 
@@ -47,7 +47,7 @@ set( GOBY_LIBRARY_PATH
 # Search for the moos-ivp folder
 find_path( MOOSIVP_SOURCE_TREE_BASE
            NAMES build-ivp.sh build-moos.sh configure-ivp.sh
-           PATHS "../moos-ivp" "../../../moos-ivp" "../../../moos-ivp/trunk/" "../moos-ivp/trunk/" "~/moos-ivp"
+           PATHS "../moos-ivp" "../../../../moos-ivp" "../../../../moos-ivp/trunk/" "../moos-ivp/trunk/" "~/moos-ivp"
            DOC "Base directory of the MOOS-IvP source tree"
            NO_DEFAULT_PATH
 )

@@ -71,6 +71,9 @@ if [ ! -d $START_DIRECTORY ] ; then
     exit 1;
 fi
 
+cd $START_DIRECTORY
+START_DIRECTORY=$(pwd)
+
 if [ ! -d $START_DIRECTORY/moos ] ; then
     mkdir $START_DIRECTORY/moos
 fi
