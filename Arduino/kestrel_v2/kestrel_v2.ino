@@ -44,7 +44,7 @@ void setup() {
   radio.powerBullet();
     
   // interface serial
-  Serial.begin(115200);
+  Serial.begin(9600);
   Serial.setTimeout(1);
   
   // other serials
