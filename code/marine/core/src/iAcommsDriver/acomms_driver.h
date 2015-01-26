@@ -93,6 +93,8 @@ protected:
 public:
     bool OnSimConnect(void * pParam);
     bool OnSimMail(void * pParam);
+    bool SimConnect();
+    void simIterate();
 
 protected:
     // mutex and variables for passing data into normal driver thread
