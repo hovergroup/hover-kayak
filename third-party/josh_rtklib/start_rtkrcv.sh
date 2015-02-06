@@ -1,1 +1,1 @@
-/home/josh/third-party/rtklib/app/rtkrcv/gcc/rtkrcv -o /home/josh/third-party/josh_rtklib/rtknavi.conf -s &
+$HOME/hoverland/hovergroup/third-party/rtklib/app/rtkrcv/gcc/rtkrcv -o $HOME/hoverland/hovergroup/third-party/josh_rtklib/rtknavi.conf -s &
