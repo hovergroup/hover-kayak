@@ -20,6 +20,34 @@ enum ChannelState {
     AVAILABLE, BUSY
 };
 
+// from db post to channel active
+double POST_TO_TRANSMIT_DELAY;
+// from db post to TXF
+double MINI_TRANSMIT_LENGTH;
+double FSK_TRANSMIT_LENGTH;
+double PSK1_TRANSMIT_LENGTH;
+double PSK2_TRANSMIT_LENGTH;
+
+
+class SingleDriverSim {
+public:
+	enum DriverStatus {
+		TRANSMIT_POSTED,
+		TRANSMIT_STARTED,
+		RECEIVING,
+		READY
+	};
+public:
+	SingleDriverSim();
+	~SingleDriverSim();
+
+	void startTransmission()
+
+private:
+	DriverStatus m_state;
+	double m_transmitPostTime, m_receiveStartTime;
+};
+
 class AcommsSimulator: public CMOOSApp {
 public:
     AcommsSimulator();
