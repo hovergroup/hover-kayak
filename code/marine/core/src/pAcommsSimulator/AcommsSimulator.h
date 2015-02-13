@@ -15,37 +15,81 @@
 #include "acommsSim.pb.h"
 
 #include <map>
+#include <deque>
+#include "boost/assign.hpp"
 
 enum ChannelState {
     AVAILABLE, BUSY
 };
 
-// from db post to channel active
-double POST_TO_TRANSMIT_DELAY;
-// from db post to TXF
-double MINI_TRANSMIT_LENGTH;
-double FSK_TRANSMIT_LENGTH;
-double PSK1_TRANSMIT_LENGTH;
-double PSK2_TRANSMIT_LENGTH;
+enum DriverStatus {
+	TRANSMIT_POSTED,
+	TRANSMIT_STARTED,
+	RECEIVING_SOUND,
+	RECEIVING_PARSE,
+	READY
+};
 
+static const std::map<DriverStatus,std::string> DriverStatusNameMap =
+		boost::assign::map_list_of
+		(TRANSMIT_POSTED,"TRANSMIT_POSTED")
+		(TRANSMIT_STARTED,"TRANSMIT_STARTED")
+		(RECEIVING_SOUND,"RECEIVING_SOUND")
+		(RECEIVING_PARSE,"RECEIVING_PARSE")
+		(READY,"READY");
+
+// from db post to channel active
+static const double POST_TO_TRANSMIT_DELAY = 0;
+// from db post to TXF
+static const double MINI_TRANSMIT_LENGTH = 2;
+static const double FSK_TRANSMIT_LENGTH = 5;
+static const double PSK1_TRANSMIT_LENGTH = 5;
+static const double PSK2_TRANSMIT_LENGTH = 5;
+static const double PARSE_TIME = 0.5;
+// map for easy access - populated in constructor
+extern std::map<int,double> RATE_TRANSMIT_LENGTH_MAP;
 
 class SingleDriverSim {
 public:
-	enum DriverStatus {
-		TRANSMIT_POSTED,
-		TRANSMIT_STARTED,
-		RECEIVING,
-		READY
+	struct PostEvent {
+		double post_time;
+		DriverStatus new_state;
+		std::string to_post;
 	};
-public:
-	SingleDriverSim();
-	~SingleDriverSim();
 
-	void startTransmission()
+public:
+	SingleDriverSim(std::string name, MOOS::MOOSAsyncCommClient * comms);
+	SingleDriverSim() {}
+	~SingleDriverSim() {}
+
+	bool startTransmission(goby::acomms::protobuf::ModemTransmission transmission);
+	bool startReception(double receive_start_time,
+			goby::acomms::protobuf::ModemTransmission reception);
+	bool updateWithReport(const AcommsSimReport &asr);
+	void clearQueue();
+	void doWork();
+	double getTransmitLength(goby::acomms::protobuf::ModemTransmission transmission);
+
+	DriverStatus getState() { return m_state; }
+	std::string getName() { return m_name; }
+
+	double getX() { return m_navx; }
+	double getY() { return m_navy; }
+	double getDepth() { return m_navdepth; }
+	double getHeading() { return m_navheading; }
+	double getSpeed() { return m_navspeed; }
+	bool getRangingEnabled() { return m_rangingEnabled; }
 
 private:
 	DriverStatus m_state;
-	double m_transmitPostTime, m_receiveStartTime;
+
+	std::string m_name, m_postVariable;
+	double m_navx, m_navy, m_navdepth, m_navheading, m_navspeed;
+	bool m_rangingEnabled;
+
+	double m_queueStartTime;
+	std::deque<PostEvent> m_postQueue;
+	MOOS::MOOSAsyncCommClient * m_Comms;
 };
 
 class AcommsSimulator: public CMOOSApp {
@@ -61,7 +105,10 @@ protected:
     void RegisterVariables();
 
 private:
-    std::map<std::string, AcommsSimReport> m_vehicleStatus;
+    std::map<std::string, SingleDriverSim> m_singleSims;
+    std::vector<std::string> m_vehicles;
+
+    bool vehicleExists(std::string name);
 
     // data handling
     void handleReport(const AcommsSimReport &asr);

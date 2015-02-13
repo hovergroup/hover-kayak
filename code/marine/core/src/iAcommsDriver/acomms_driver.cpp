@@ -452,8 +452,17 @@ void acomms_driver::handle_raw_incoming(
 
     // receive start, set status and flags
     else if (descriptor == "RXP") {
-        publishStatus(HoverAcomms::RECEIVING);
-        receive_set_time = MOOSTime();
+    	if (in_sim) {
+    		if (m_status == HoverAcomms::READY) {
+    	        publishStatus(HoverAcomms::RECEIVING);
+    	        receive_set_time = MOOSTime();
+    		} else {
+    			cout << "Ignoring receive start because already transmitting" << endl;
+    		}
+    	} else {
+			publishStatus(HoverAcomms::RECEIVING);
+			receive_set_time = MOOSTime();
+    	}
     }
 
     // impulse response, post to moosdb
