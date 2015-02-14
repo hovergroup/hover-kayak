@@ -16,6 +16,8 @@
 
 #include <map>
 #include <deque>
+#include <math.h>
+#include <time.h>
 #include "boost/assign.hpp"
 
 enum ChannelState {
@@ -23,20 +25,27 @@ enum ChannelState {
 };
 
 enum DriverStatus {
-	TRANSMIT_POSTED,
-	TRANSMIT_STARTED,
-	RECEIVING_SOUND,
-	RECEIVING_PARSE,
-	READY
+    TRANSMIT_POSTED,
+    TRANSMIT_STARTED,
+    RECEIVING_SOUND,
+    RECEIVING_PARSE,
+    READY
+};
+
+enum LossType {
+    NONE,
+    PARTIAL,
+    COMPLETE,
+    SYNC
 };
 
 static const std::map<DriverStatus,std::string> DriverStatusNameMap =
-		boost::assign::map_list_of
-		(TRANSMIT_POSTED,"TRANSMIT_POSTED")
-		(TRANSMIT_STARTED,"TRANSMIT_STARTED")
-		(RECEIVING_SOUND,"RECEIVING_SOUND")
-		(RECEIVING_PARSE,"RECEIVING_PARSE")
-		(READY,"READY");
+        boost::assign::map_list_of
+        (TRANSMIT_POSTED,"TRANSMIT_POSTED")
+        (TRANSMIT_STARTED,"TRANSMIT_STARTED")
+        (RECEIVING_SOUND,"RECEIVING_SOUND")
+        (RECEIVING_PARSE,"RECEIVING_PARSE")
+        (READY,"READY");
 
 // from db post to channel active
 static const double POST_TO_TRANSMIT_DELAY = 0;
@@ -51,45 +60,45 @@ extern std::map<int,double> RATE_TRANSMIT_LENGTH_MAP;
 
 class SingleDriverSim {
 public:
-	struct PostEvent {
-		double post_time;
-		DriverStatus new_state;
-		std::string to_post;
-	};
+    struct PostEvent {
+        double post_time;
+        DriverStatus new_state;
+        std::string to_post;
+    };
 
 public:
-	SingleDriverSim(std::string name, MOOS::MOOSAsyncCommClient * comms);
-	SingleDriverSim() {}
-	~SingleDriverSim() {}
+    SingleDriverSim(std::string name, MOOS::MOOSAsyncCommClient * comms);
+    SingleDriverSim() {}
+    ~SingleDriverSim() {}
 
-	bool startTransmission(goby::acomms::protobuf::ModemTransmission transmission);
-	bool startReception(double receive_start_time,
-			goby::acomms::protobuf::ModemTransmission reception);
-	bool updateWithReport(const AcommsSimReport &asr);
-	void clearQueue();
-	void doWork();
-	double getTransmitLength(goby::acomms::protobuf::ModemTransmission transmission);
+    bool startTransmission(goby::acomms::protobuf::ModemTransmission transmission);
+    bool startReception(double receive_start_time,
+            goby::acomms::protobuf::ModemTransmission reception);
+    bool updateWithReport(const AcommsSimReport &asr);
+    void clearQueue();
+    void doWork();
+    double getTransmitLength(goby::acomms::protobuf::ModemTransmission transmission);
 
-	DriverStatus getState() { return m_state; }
-	std::string getName() { return m_name; }
+    DriverStatus getState() { return m_state; }
+    std::string getName() { return m_name; }
 
-	double getX() { return m_navx; }
-	double getY() { return m_navy; }
-	double getDepth() { return m_navdepth; }
-	double getHeading() { return m_navheading; }
-	double getSpeed() { return m_navspeed; }
-	bool getRangingEnabled() { return m_rangingEnabled; }
+    double getX() { return m_navx; }
+    double getY() { return m_navy; }
+    double getDepth() { return m_navdepth; }
+    double getHeading() { return m_navheading; }
+    double getSpeed() { return m_navspeed; }
+    bool getRangingEnabled() { return m_rangingEnabled; }
 
 private:
-	DriverStatus m_state;
+    DriverStatus m_state;
 
-	std::string m_name, m_postVariable;
-	double m_navx, m_navy, m_navdepth, m_navheading, m_navspeed;
-	bool m_rangingEnabled;
+    std::string m_name, m_postVariable;
+    double m_navx, m_navy, m_navdepth, m_navheading, m_navspeed;
+    bool m_rangingEnabled;
 
-	double m_queueStartTime;
-	std::deque<PostEvent> m_postQueue;
-	MOOS::MOOSAsyncCommClient * m_Comms;
+    double m_queueStartTime;
+    std::deque<PostEvent> m_postQueue;
+    MOOS::MOOSAsyncCommClient * m_Comms;
 };
 
 class AcommsSimulator: public CMOOSApp {
@@ -108,13 +117,27 @@ private:
     std::map<std::string, SingleDriverSim> m_singleSims;
     std::vector<std::string> m_vehicles;
 
+    double SPEED_OF_SOUND;
+    double P_PARTIAL_LOSS, P_COMPLETE_LOSS, P_SYNC_LOSS, P_NO_LOSS;
+    // 1 - (P_PARTIAL_LOSS + P_COMPLETE_LOSS + P_SYNC_LOSS) = P_NO_LOSS;
+    double P_LOSS_PER_FRAME;
+
     bool vehicleExists(std::string name);
+    double randZeroToOne();
 
     // data handling
     void handleReport(const AcommsSimReport &asr);
     void handleNewTransmission(
             const goby::acomms::protobuf::ModemTransmission & trans,
             std::string source_vehicle);
+    void createReception(const goby::acomms::protobuf::ModemTransmission & transmission,
+            goby::acomms::protobuf::ModemTransmission & reception,
+            std::string source_vehicle,
+            std::string dest_vehicle);
+    LossType calculateLoss(goby::acomms::protobuf::ModemTransmission & reception,
+            std::string source_vehicle,
+            std::string dest_vehicle);
+    double getTimeOfFlight(std::string source_vehicle, std::string dest_vehicle);
 
     // state variables
     ChannelState m_channelState;

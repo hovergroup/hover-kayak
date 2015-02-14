@@ -61,123 +61,124 @@ using namespace std;
 std::map<int,double> RATE_TRANSMIT_LENGTH_MAP;
 
 SingleDriverSim::SingleDriverSim(string name, MOOS::MOOSAsyncCommClient * comms) {
-	m_Comms = comms;
-	m_name = MOOSToUpper(name.c_str());
-	m_navdepth = 0;
-	m_navheading = 0;
-	m_navspeed = 0;
-	m_postVariable = "ACOMMS_SIM_OUT_" + m_name;
+    m_Comms = comms;
+    m_name = MOOSToUpper(name.c_str());
+    m_navdepth = 0;
+    m_navheading = 0;
+    m_navspeed = 0;
+    m_postVariable = "ACOMMS_SIM_OUT_" + m_name;
 }
 
 bool SingleDriverSim::updateWithReport(const AcommsSimReport &asr) {
-	if (asr.vehicle_name() != m_name) {
-		cout << "Name mismatch: " << asr.vehicle_name() << " != " <<
-				m_name << " - not updating." << endl;
-		return false;
-	}
-	m_navx = asr.x();
-	m_navy = asr.y();
-	if (asr.has_depth())
-		m_navdepth = asr.depth();
-	if (asr.has_heading())
-		m_navheading = asr.heading();
-	if (asr.has_speed())
-		m_navspeed = asr.speed();
-	m_rangingEnabled = asr.ranging_enabled();
+    if (asr.vehicle_name() != m_name) {
+        cout << "Name mismatch: " << asr.vehicle_name() << " != " <<
+                m_name << " - not updating." << endl;
+        return false;
+    }
+    m_navx = asr.x();
+    m_navy = asr.y();
+    if (asr.has_depth())
+        m_navdepth = asr.depth();
+    if (asr.has_heading())
+        m_navheading = asr.heading();
+    if (asr.has_speed())
+        m_navspeed = asr.speed();
+    m_rangingEnabled = asr.ranging_enabled();
 
-	return true;
+    return true;
 }
 
 double SingleDriverSim::getTransmitLength(goby::acomms::protobuf::ModemTransmission transmission) {
-	if (transmission.type() == goby::acomms::protobuf::ModemTransmission::DRIVER_SPECIFIC) {
-		if (transmission.GetExtension(micromodem::protobuf::type)==micromodem::protobuf::MICROMODEM_REMUS_LBL_RANGING) {
-			return 1;
-		} else {
-			return MINI_TRANSMIT_LENGTH;
-		}
-	} else
-		return RATE_TRANSMIT_LENGTH_MAP[transmission.rate()];
+    if (transmission.type() == goby::acomms::protobuf::ModemTransmission::DRIVER_SPECIFIC) {
+        if (transmission.GetExtension(micromodem::protobuf::type)==micromodem::protobuf::MICROMODEM_REMUS_LBL_RANGING) {
+            return 1;
+        } else {
+            return MINI_TRANSMIT_LENGTH;
+        }
+    } else
+        return RATE_TRANSMIT_LENGTH_MAP[transmission.rate()];
 }
 
 bool SingleDriverSim::startTransmission(goby::acomms::protobuf::ModemTransmission transmission) {
-	if (m_state != READY) {
-		cout << m_name << " failed to start transmission while in state "
-				<< DriverStatusNameMap.at(m_state) << endl;
-		return false;
-	}
+    if (m_state != READY) {
+        cout << m_name << " failed to start transmission while in state "
+                << DriverStatusNameMap.at(m_state) << endl;
+        return false;
+    }
 
-	m_queueStartTime = MOOSTime();
+    m_queueStartTime = MOOSTime();
 
-	PostEvent transmit_posted;
-	transmit_posted.post_time = MOOSTime();
-	transmit_posted.new_state = TRANSMIT_POSTED;
-	transmit_posted.to_post = "";
-	m_postQueue.push_back(transmit_posted);
+    PostEvent transmit_posted;
+    transmit_posted.post_time = MOOSTime();
+    transmit_posted.new_state = TRANSMIT_POSTED;
+    transmit_posted.to_post = "";
+    m_postQueue.push_back(transmit_posted);
 
-	PostEvent transmit_started;
-	transmit_started.post_time = transmit_posted.post_time + POST_TO_TRANSMIT_DELAY;
-	transmit_started.new_state = TRANSMIT_STARTED;
-	transmit_started.to_post = "";
-	m_postQueue.push_back(transmit_started);
+    PostEvent transmit_started;
+    transmit_started.post_time = transmit_posted.post_time + POST_TO_TRANSMIT_DELAY;
+    transmit_started.new_state = TRANSMIT_STARTED;
+    transmit_started.to_post = "";
+    m_postQueue.push_back(transmit_started);
 
-	PostEvent transmit_done;
-	transmit_done.post_time = transmit_started.post_time + getTransmitLength(transmission);
-	transmit_done.new_state = READY;
-	transmit_done.to_post = "TXF";
-	m_postQueue.push_back(transmit_done);
+    PostEvent transmit_done;
+    transmit_done.post_time = transmit_started.post_time + getTransmitLength(transmission);
+    transmit_done.new_state = READY;
+    transmit_done.to_post = "TXF";
+    m_postQueue.push_back(transmit_done);
 
-	return true;
+    return true;
 }
 
 bool SingleDriverSim::startReception(double receive_start_time,
-		goby::acomms::protobuf::ModemTransmission reception) {
-	if (m_state != READY) {
-		cout << m_name << " failed to start reception while in state "
-				<< DriverStatusNameMap.at(m_state) << endl;
-		return false;
-	}
+        goby::acomms::protobuf::ModemTransmission reception) {
+    if (m_state != READY) {
+        cout << m_name << " failed to start reception while in state "
+                << DriverStatusNameMap.at(m_state) << endl;
+        return false;
+    }
 
-	m_queueStartTime = receive_start_time;
+    m_queueStartTime = receive_start_time;
 
-	PostEvent receive_start;
-	receive_start.post_time = receive_start_time;
-	receive_start.new_state = RECEIVING_SOUND;
-	receive_start.to_post = "RXP";
-	m_postQueue.push_back(receive_start);
+    PostEvent receive_start;
+    receive_start.post_time = receive_start_time;
+    receive_start.new_state = RECEIVING_SOUND;
+    receive_start.to_post = "RXP";
+    m_postQueue.push_back(receive_start);
 
-	PostEvent receive_parse;
-	receive_parse.post_time = receive_start_time + getTransmitLength(reception);
-	receive_parse.new_state = RECEIVING_PARSE;
-	receive_parse.to_post = "";
-	m_postQueue.push_back(receive_parse);
+    PostEvent receive_parse;
+    receive_parse.post_time = receive_start_time + getTransmitLength(reception);
+    receive_parse.new_state = RECEIVING_PARSE;
+    receive_parse.to_post = "";
+    m_postQueue.push_back(receive_parse);
 
-	PostEvent receive_done;
-	receive_done.post_time = receive_parse.post_time + PARSE_TIME;
-	receive_done.new_state = READY;
-	receive_done.to_post = reception.SerializeAsString();
-	m_postQueue.push_back(receive_done);
+    PostEvent receive_done;
+    receive_done.post_time = receive_parse.post_time + PARSE_TIME;
+    receive_done.new_state = READY;
+    receive_done.to_post = reception.SerializeAsString();
+    m_postQueue.push_back(receive_done);
 
-	return true;
+    return true;
 }
+
 void SingleDriverSim::clearQueue() {
-	m_postQueue.clear();
-	m_state = READY;
+    m_postQueue.clear();
+    m_state = READY;
 }
 
 void SingleDriverSim::doWork() {
-	if (!m_postQueue.empty()) {
-		while (MOOSTime() > m_postQueue.front().post_time) {
-			if (!m_postQueue.front().to_post.empty()) {
-				m_Comms->Notify(m_postVariable,
-						(void *) m_postQueue.front().to_post.data(),
-						m_postQueue.front().to_post.size());
-			}
-			m_state = m_postQueue.front().new_state;
-			cout << m_name << " advanced to state " << DriverStatusNameMap.at(m_state)
-					<< " after " << m_postQueue.front().post_time-m_queueStartTime << " seconds." << endl;
-			m_postQueue.pop_front();
-		}
-	}
+    if (!m_postQueue.empty()) {
+        while (MOOSTime() > m_postQueue.front().post_time) {
+            if (!m_postQueue.front().to_post.empty()) {
+                m_Comms->Notify(m_postVariable,
+                        (void *) m_postQueue.front().to_post.data(),
+                        m_postQueue.front().to_post.size());
+            }
+            m_state = m_postQueue.front().new_state;
+            cout << m_name << " advanced to state " << DriverStatusNameMap.at(m_state)
+                    << " after " << m_postQueue.front().post_time-m_queueStartTime << " seconds." << endl;
+            m_postQueue.pop_front();
+        }
+    }
 }
 
 
@@ -187,6 +188,21 @@ void SingleDriverSim::doWork() {
 AcommsSimulator::AcommsSimulator() {
     // state variables
     m_channelState = AVAILABLE;
+
+    SPEED_OF_SOUND = 1450;
+    P_PARTIAL_LOSS = 0.1;
+    P_COMPLETE_LOSS = 0.1;
+    P_SYNC_LOSS = 0.1;
+    P_NO_LOSS = 1 - P_PARTIAL_LOSS - P_COMPLETE_LOSS - P_SYNC_LOSS;
+    P_LOSS_PER_FRAME = 0.5;
+    if (P_PARTIAL_LOSS < 0 || P_COMPLETE_LOSS < 0 || P_SYNC_LOSS < 0 || P_NO_LOSS < 0 ||
+            P_LOSS_PER_FRAME < 0 || P_PARTIAL_LOSS > 1 || P_COMPLETE_LOSS > 1 ||
+            P_SYNC_LOSS > 1 || P_NO_LOSS > 1 || P_LOSS_PER_FRAME < 0 || P_LOSS_PER_FRAME > 1) {
+        cout << "Default losses in constructor were impossible." << endl;
+        exit(1);
+    }
+
+    srand(time(NULL));
 
     RATE_TRANSMIT_LENGTH_MAP[0] = FSK_TRANSMIT_LENGTH;
     RATE_TRANSMIT_LENGTH_MAP[1] = PSK1_TRANSMIT_LENGTH;
@@ -261,6 +277,9 @@ bool AcommsSimulator::OnConnectToServer() {
 //            happens AppTick times per second
 
 bool AcommsSimulator::Iterate() {
+    for (int i=0; i<m_vehicles.size(); i++) {
+        m_singleSims[m_vehicles[i]].doWork();
+    }
     return (true);
 }
 
@@ -269,6 +288,20 @@ bool AcommsSimulator::Iterate() {
 //            happens before connection is open
 
 bool AcommsSimulator::OnStartUp() {
+    m_MissionReader.GetConfigurationParam("sound_speed", SPEED_OF_SOUND);
+    m_MissionReader.GetConfigurationParam("p_partial_loss", P_PARTIAL_LOSS);
+    m_MissionReader.GetConfigurationParam("p_complete_loss", P_COMPLETE_LOSS);
+    m_MissionReader.GetConfigurationParam("p_sync_loss", P_SYNC_LOSS);
+    m_MissionReader.GetConfigurationParam("p_loss_per_frame", P_LOSS_PER_FRAME);
+
+    P_NO_LOSS = 1 - P_PARTIAL_LOSS - P_COMPLETE_LOSS - P_SYNC_LOSS;
+    if (P_PARTIAL_LOSS < 0 || P_COMPLETE_LOSS < 0 || P_SYNC_LOSS < 0 || P_NO_LOSS < 0 ||
+            P_LOSS_PER_FRAME < 0 || P_PARTIAL_LOSS > 1 || P_COMPLETE_LOSS > 1 ||
+            P_SYNC_LOSS > 1 || P_NO_LOSS > 1 || P_LOSS_PER_FRAME < 0 || P_LOSS_PER_FRAME > 1) {
+        cout << "Bad loss configuration" << endl;
+        return false;
+    }
+
     return (true);
 }
 
@@ -282,16 +315,16 @@ void AcommsSimulator::RegisterVariables() {
 }
 
 void AcommsSimulator::handleReport(const AcommsSimReport &asr) {
-	string name = asr.vehicle_name();
+    string name = MOOSToUpper(asr.vehicle_name());
     // check if we already know about this vehicle
-	if (vehicleExists(name)) {
-		m_singleSims[name].updateWithReport(asr);
-	} else {
-		m_vehicles.push_back(name);
-		SingleDriverSim newsim(name, &m_Comms);
-		m_singleSims[name] = newsim;
-		m_singleSims[name].updateWithReport(asr);
-	}
+    if (vehicleExists(name)) {
+        m_singleSims[name].updateWithReport(asr);
+    } else {
+        m_vehicles.push_back(name);
+        SingleDriverSim newsim(name, &m_Comms);
+        m_singleSims[name] = newsim;
+        m_singleSims[name].updateWithReport(asr);
+    }
     string vname = asr.vehicle_name();
 }
 
@@ -299,24 +332,90 @@ void AcommsSimulator::handleNewTransmission(
         const goby::acomms::protobuf::ModemTransmission & trans,
         std::string source_vehicle) {
 
-	if (m_singleSims[source_vehicle].getState() != READY) {
-		cout << source_vehicle << " was in state " << m_singleSims[source_vehicle].getState() <<
-				", clearing queue for new transmission." << endl;
-		m_singleSims[source_vehicle].clearQueue();
-	}
+    if (m_singleSims[source_vehicle].getState() != READY) {
+        cout << source_vehicle << " was in state " << m_singleSims[source_vehicle].getState() <<
+                ", clearing queue for new transmission." << endl;
+        m_singleSims[source_vehicle].clearQueue();
+    }
 
     // check that channel is available
     if (m_channelState != AVAILABLE) {
-    	cout << "Channel unavailable for new transmission from " << source_vehicle << endl;
-    	m_singleSims[source_vehicle].startTransmission(trans);
+        cout << "Channel unavailable for new transmission from " << source_vehicle << endl;
+        m_singleSims[source_vehicle].startTransmission(trans);
         return;
     } else {
-    	for (int i=0; i<m_vehicles.size(); i++) {
-    		if (m_vehicles[i] != source_vehicle) {
-
-    		}
-    	}
+        double start_time = MOOSTime();
+        for (int i=0; i<m_vehicles.size(); i++) {
+            string dest_vehicle = m_vehicles[i];
+            if (dest_vehicle != source_vehicle) {
+                goby::acomms::protobuf::ModemTransmission reception;
+                createReception(trans, reception, source_vehicle, dest_vehicle);
+                LossType loss = calculateLoss(reception, source_vehicle, dest_vehicle);
+                double time_of_flight = getTimeOfFlight(source_vehicle, dest_vehicle);
+                if (loss != SYNC) {
+                    m_singleSims[dest_vehicle].startReception(start_time + time_of_flight, reception);
+                }
+            }
+        }
     }
+}
+
+double AcommsSimulator::getTimeOfFlight(std::string source_vehicle, std::string dest_vehicle) {
+    double source_x = m_singleSims[source_vehicle].getX();
+    double source_y = m_singleSims[source_vehicle].getY();
+    double source_depth = m_singleSims[source_vehicle].getDepth();
+    double dest_x = m_singleSims[dest_vehicle].getX();
+    double dest_y = m_singleSims[dest_vehicle].getY();
+    double dest_depth = m_singleSims[dest_vehicle].getDepth();
+
+    double horizontal = sqrt(pow(dest_x-source_x,2.0) + pow(dest_y-source_y,2.0));
+    double distance = sqrt(pow(horizontal,2.0) + pow(dest_depth-source_depth,2.0));
+    return distance / SPEED_OF_SOUND;
+}
+
+void AcommsSimulator::createReception(const goby::acomms::protobuf::ModemTransmission & transmission,
+           goby::acomms::protobuf::ModemTransmission & reception,
+            std::string source_vehicle,
+            std::string dest_vehicle) {
+
+    reception.CopyFrom(transmission);
+
+    if (m_singleSims[dest_vehicle].getRangingEnabled()) {
+
+    }
+}
+
+LossType AcommsSimulator::calculateLoss(goby::acomms::protobuf::ModemTransmission & reception,
+            std::string source_vehicle,
+            std::string dest_vehicle) {
+    double rand = randZeroToOne();
+    LossType loss;
+    if (rand < P_NO_LOSS) {
+        loss = NONE;
+    } else if (rand < P_NO_LOSS + P_PARTIAL_LOSS) {
+        loss = PARTIAL;
+    } else if (rand < P_NO_LOSS + P_PARTIAL_LOSS + P_COMPLETE_LOSS) {
+        loss = COMPLETE;
+    } else {
+        loss = SYNC;
+    }
+
+    switch (loss) {
+    case NONE:
+        return NONE;
+        break;
+
+    case PARTIAL:
+        break;
+
+    case COMPLETE:
+        break;
+
+    case SYNC:
+        return SYNC;
+        break;
+    }
+
 }
 
 void AcommsSimulator::publishWarning(string msg) {
@@ -324,10 +423,14 @@ void AcommsSimulator::publishWarning(string msg) {
 }
 
 bool AcommsSimulator::vehicleExists(string name) {
-	map<string, SingleDriverSim>::iterator it;
-	it = m_singleSims.find(name);
-	if (it == m_singleSims.end())
-		return false;
-	else
-		return true;
+    map<string, SingleDriverSim>::iterator it;
+    it = m_singleSims.find(name);
+    if (it == m_singleSims.end())
+        return false;
+    else
+        return true;
+}
+
+double AcommsSimulator::randZeroToOne() {
+    return ((double) rand()) / ((double) RAND_MAX);
 }
