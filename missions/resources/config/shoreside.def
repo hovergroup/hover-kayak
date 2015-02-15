@@ -4,3 +4,19 @@
 #define SLPORT 9001
 #define SPORT 9000
 #define SNAME TERRA
+
+#define VNAME1 ICARUS
+#define VHOST1 192.168.1.102
+#define LPORT1 9201
+
+#define VNAME2 NOSTROMO
+#define VHOST2 192.168.1.103
+#define LPORT2 9301
+
+#define VNAME3 SILVANA
+#define VHOST3 192.168.1.104
+#define LPORT3 9401
+
+#define VNAME4 KESTREL
+#define VHOST4 192.168.1.105
+#define LPORT4 9501

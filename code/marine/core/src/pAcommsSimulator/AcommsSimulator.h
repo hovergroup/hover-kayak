@@ -116,6 +116,7 @@ protected:
 private:
     std::map<std::string, SingleDriverSim> m_singleSims;
     std::vector<std::string> m_vehicles;
+    double m_randomTimeOffset;
 
     double SPEED_OF_SOUND;
     double P_PARTIAL_LOSS, P_COMPLETE_LOSS, P_SYNC_LOSS, P_NO_LOSS;
@@ -138,6 +139,9 @@ private:
             std::string source_vehicle,
             std::string dest_vehicle);
     double getTimeOfFlight(std::string source_vehicle, std::string dest_vehicle);
+
+    void applyPartialLoss(goby::acomms::protobuf::ModemTransmission & reception);
+    void applyCompleteLoss(goby::acomms::protobuf::ModemTransmission & reception);
 
     // state variables
     ChannelState m_channelState;

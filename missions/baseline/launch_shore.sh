@@ -1,10 +1,5 @@
 #!/bin/bash
 
-# source parameters
-MISSIONS_HOME="../.."
-source ${MISSIONS_HOME}/trunk/config/hard_config
-source ${MISSIONS_HOME}/trunk/config/soft_config
-
 HELP=false
 JUST_BUILD=false
 BAD_ARGS=""
@@ -64,19 +59,7 @@ fi
 nsplug meta_shoreside.moos targ_shoreside.moos -f       \
     LPORT=$SLPORT      VPORT=$SPORT                     \
     VNAME=$SNAME       WARP=$WARP                       \
-    VHOST=$SHOREHOST                                    \
-    VNAME1=$VNAME_ICARUS                                \
-    VHOST1=$VHOST_ICARUS                                \
-    LPORT1=$LPORT_ICARUS                                \
-    VNAME2=${HARD_CONFIG["NOSTROMO:VNAME"]}             \
-    VHOST2=${HARD_CONFIG["NOSTROMO:VHOST"]}             \
-    LPORT2=${HARD_CONFIG["NOSTROMO:LPORT"]}             \
-    VNAME3=${HARD_CONFIG["SILVANA:VNAME"]}              \
-    VHOST3=${HARD_CONFIG["SILVANA:VHOST"]}              \
-    LPORT3=${HARD_CONFIG["SILVANA:LPORT"]}              \
-    VNAME4=${HARD_CONFIG["KESTREL:VNAME"]}              \
-    VHOST4=${HARD_CONFIG["KESTREL:VHOST"]}              \
-    LPORT4=${HARD_CONFIG["KESTREL:LPORT"]}              \
+    VHOST=$SHOREHOST                                    
 
 if $JUST_BUILD ; then
     exit 0

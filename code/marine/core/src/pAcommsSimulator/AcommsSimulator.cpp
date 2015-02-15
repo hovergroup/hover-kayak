@@ -332,6 +332,7 @@ void AcommsSimulator::handleNewTransmission(
         const goby::acomms::protobuf::ModemTransmission & trans,
         std::string source_vehicle) {
 
+    // abort existing reception (handles conflicts)
     if (m_singleSims[source_vehicle].getState() != READY) {
         cout << source_vehicle << " was in state " << m_singleSims[source_vehicle].getState() <<
                 ", clearing queue for new transmission." << endl;
@@ -341,16 +342,25 @@ void AcommsSimulator::handleNewTransmission(
     // check that channel is available
     if (m_channelState != AVAILABLE) {
         cout << "Channel unavailable for new transmission from " << source_vehicle << endl;
-        m_singleSims[source_vehicle].startTransmission(trans);
-        return;
     } else {
+        // if the transmitter is not time synced, create a random offset for this transmission
+        if (!m_singleSims[source_vehicle].getRangingEnabled()) {
+            m_randomTimeOffset = randZeroToOne();
+        }
+
         double start_time = MOOSTime();
         for (int i=0; i<m_vehicles.size(); i++) {
             string dest_vehicle = m_vehicles[i];
+            // don't create reception for transmitter
             if (dest_vehicle != source_vehicle) {
+                // create a reception
                 goby::acomms::protobuf::ModemTransmission reception;
                 createReception(trans, reception, source_vehicle, dest_vehicle);
+
+                // apply losses
                 LossType loss = calculateLoss(reception, source_vehicle, dest_vehicle);
+
+                // calculate time delay and start reception (if not sync loss)
                 double time_of_flight = getTimeOfFlight(source_vehicle, dest_vehicle);
                 if (loss != SYNC) {
                     m_singleSims[dest_vehicle].startReception(start_time + time_of_flight, reception);
@@ -358,6 +368,9 @@ void AcommsSimulator::handleNewTransmission(
             }
         }
     }
+
+    // always start transmission on source vehicle
+    m_singleSims[source_vehicle].startTransmission(trans);
 }
 
 double AcommsSimulator::getTimeOfFlight(std::string source_vehicle, std::string dest_vehicle) {
@@ -373,6 +386,14 @@ double AcommsSimulator::getTimeOfFlight(std::string source_vehicle, std::string 
     return distance / SPEED_OF_SOUND;
 }
 
+
+
+/*
+ * frame with bad crc extension
+ * ranging reply extension
+ * number of receive statistics
+ * # of frames in receive stat should be correct
+ */
 void AcommsSimulator::createReception(const goby::acomms::protobuf::ModemTransmission & transmission,
            goby::acomms::protobuf::ModemTransmission & reception,
             std::string source_vehicle,
@@ -380,14 +401,40 @@ void AcommsSimulator::createReception(const goby::acomms::protobuf::ModemTransmi
 
     reception.CopyFrom(transmission);
 
-    if (m_singleSims[dest_vehicle].getRangingEnabled()) {
+    // add receive statistics (extra for FSK 0)
+    int stat_index = 0;
+    if (reception.rate() == 0) {
+        reception.AddExtension(micromodem::protobuf::receive_stat);
+        stat_index = 1;
+    }
+    reception.AddExtension(micromodem::protobuf::receive_stat);
+    reception.MutableExtension(micromodem::protobuf::receive_stat, stat_index)->
+            set_number_frames(reception.frame_size());
 
+    bool source_ranging = m_singleSims[source_vehicle].getRangingEnabled();
+    bool dest_ranging = m_singleSims[dest_vehicle].getRangingEnabled();
+    if (source_ranging && dest_ranging) {
+        // ranging enabled on both - get actual time of flight
+        micromodem::protobuf::RangingReply rr;
+        rr.set_one_way_travel_time(0,getTimeOfFlight(source_vehicle, dest_vehicle));
+        reception.MutableExtension(micromodem::protobuf::ranging_reply)->CopyFrom(rr);
+    } else if (!source_ranging && dest_ranging) {
+        // ranging enabled on dest only - add random offset
+        micromodem::protobuf::RangingReply rr;
+        double time_of_flight = getTimeOfFlight(source_vehicle, dest_vehicle) + m_randomTimeOffset;
+        while (time_of_flight > 1) {
+            time_of_flight-=1;
+        }
+        rr.set_one_way_travel_time(0,time_of_flight);
+        reception.MutableExtension(micromodem::protobuf::ranging_reply)->CopyFrom(rr);
     }
 }
 
 LossType AcommsSimulator::calculateLoss(goby::acomms::protobuf::ModemTransmission & reception,
             std::string source_vehicle,
             std::string dest_vehicle) {
+
+    // determine loss type
     double rand = randZeroToOne();
     LossType loss;
     if (rand < P_NO_LOSS) {
@@ -400,22 +447,81 @@ LossType AcommsSimulator::calculateLoss(goby::acomms::protobuf::ModemTransmissio
         loss = SYNC;
     }
 
+    // implement selected loss type
     switch (loss) {
     case NONE:
+        // do nothing
         return NONE;
         break;
 
     case PARTIAL:
+        applyPartialLoss(reception);
+        return PARTIAL;
         break;
 
     case COMPLETE:
+        applyCompleteLoss(reception);
+        return COMPLETE;
         break;
 
     case SYNC:
+        // whole transmission missed, so no need for action
         return SYNC;
         break;
     }
 
+}
+
+void AcommsSimulator::applyPartialLoss(goby::acomms::protobuf::ModemTransmission & reception) {
+    // iterate over frames and apply p_loss_per_farme_individually
+    int num_bad = 0;
+    int num_frames = reception.frame_size();
+    vector<bool> bad_frames (num_frames, false);
+    for (int i=0; i<num_frames; i++) {
+        double rand = randZeroToOne();
+        if (rand < P_LOSS_PER_FRAME) {
+            bad_frames[i] = true;
+            num_bad++;
+        }
+    }
+
+    // if no bad frames, randomly select one to be bad
+    if (num_bad == 0) {
+        double rand = randZeroToOne() * num_frames;
+        for (int i=0; i<num_frames; i++) {
+            if (rand < i) {
+                bad_frames[i] = true;
+                break;
+            }
+        }
+    }
+
+    // if all bad frames, randomly select one to be good
+    if (num_bad == num_frames) {
+        double rand = randZeroToOne() * num_frames;
+        for (int i=0; i<num_frames; i++) {
+            if (rand < i) {
+                bad_frames[i] = false;
+                break;
+            }
+        }
+    }
+
+    // implement bad frames
+    for (int i=0; i<num_frames; i++) {
+        if (bad_frames[i]) {
+            reception.set_frame(i,"");
+            reception.AddExtension(micromodem::protobuf::frame_with_bad_crc, i);
+        }
+    }
+}
+
+void AcommsSimulator::applyCompleteLoss(goby::acomms::protobuf::ModemTransmission & reception) {
+    int num_frames = reception.frame_size();
+    for (int i=0; i<num_frames; i++) {
+        reception.set_frame(i,"");
+        reception.AddExtension(micromodem::protobuf::frame_with_bad_crc, i);
+    }
 }
 
 void AcommsSimulator::publishWarning(string msg) {
