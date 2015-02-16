@@ -99,7 +99,8 @@ fi
 if $SIMULATION ; then
     nsplug meta_vehicle_sim.moos targ_$VNAME.moos -f \
         $VNAME=1 $ALTIMETER=1 \
-        VHOST=localhost SHOREHOST=localhost
+        VHOST=localhost SHOREHOST=localhost \
+        SIMULATION=1
         
     nsplug meta_vehicle.bhv targ_$VNAME.bhv -f \
         $VNAME=1

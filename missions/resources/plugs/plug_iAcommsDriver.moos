@@ -9,4 +9,10 @@ ProcessConfig = iAcommsDriver
     PSK_minipackets   = false
     enable_ranging    = true
     show_range_pulses = true
+
+#ifdef SIMULATION
+    in_sim = true
+    sim_server = $(SHOREHOST)
+    sim_port = $(SPORT)
+#endif
 }

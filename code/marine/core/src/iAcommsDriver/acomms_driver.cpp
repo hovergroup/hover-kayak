@@ -244,7 +244,7 @@ bool acomms_driver::Iterate() {
     double transmit_timeout;
     switch (m_transmission.getRate()) {
     case HoverAcomms::MINI:
-        transmit_timeout = 2;
+        transmit_timeout = 3;
         break;
     default:
         transmit_timeout = 8;
@@ -253,7 +253,7 @@ bool acomms_driver::Iterate() {
     // check transmit timeout
     if (m_status == HoverAcomms::TRANSMITTING
             && MOOSTime() - transmit_set_time > transmit_timeout) {
-        if (!in_sim)
+        //if (!in_sim)
             publishWarning("Timed out in transmitting state.");
         publishStatus(HoverAcomms::READY);
     }

@@ -44,8 +44,10 @@ void acomms_driver::simIterate() {
         new_reception = true;
     }
     if (m_newSimRaw) {
+        m_newSimRaw = false;
         new_raw = true;
-        raw_msg.set_raw(m_simRaw);
+        raw_msg.set_raw("   " + m_simRaw);
+        //cout << raw_msg.DebugString() << endl;
     }
     m_simReceiveMutex.unlock();
 

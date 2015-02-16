@@ -8,5 +8,5 @@ ProcessConfig = pShare
     output = ACKEDCOMMS_TRANSMIT_$(VNAME2)->ACKEDCOMMS_TRANSMIT:$(VHOST2):$(LPORT2)
     output = ACKEDCOMMS_TRANSMIT_$(VNAME1)->ACKEDCOMMS_TRANSMIT:$(VHOST1):$(LPORT1)
   
-    input = route=localhost:$(LPORT)
+    input = route=localhost:$(SLPORT)
 }

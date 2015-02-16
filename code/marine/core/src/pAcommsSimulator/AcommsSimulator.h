@@ -139,6 +139,7 @@ private:
             std::string source_vehicle,
             std::string dest_vehicle);
     double getTimeOfFlight(std::string source_vehicle, std::string dest_vehicle);
+    micromodem::protobuf::ReceiveStatistics getCompleteStat();
 
     void applyPartialLoss(goby::acomms::protobuf::ModemTransmission & reception);
     void applyCompleteLoss(goby::acomms::protobuf::ModemTransmission & reception);

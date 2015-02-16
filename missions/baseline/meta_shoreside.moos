@@ -4,6 +4,7 @@ ServerHost = $(SHOREHOST)
 ServerPort = $(SPORT)
 Community  = $(SNAME)
 
+#define VNAME $(SNAME)
 
 #include ../resources/plugs/plug_origin_warp.moos
   
@@ -22,6 +23,10 @@ Processconfig = ANTLER
   Run = uTermCommand_Hover   @ NewConsole = true
   Run = pAckedCommsShoreside @ NewConsole = true
 
+#ifdef SIMULATION
+//  Run = pAcommsSimulator     @ NewConsole = true
+#endif
+
   1 = -geometry,80x30+0+0,-bg,lightgreen,-fg,brown
   2 = -geometry,80x15+0+460,-bg,green,-fg,black
 }
@@ -32,3 +37,7 @@ Processconfig = ANTLER
 #include ../resources/plugs/plug_pMarineViewer.moos
 #include ../resources/plugs/plug_pResourceMon.moos
 #include ../resources/plugs/plug_pAckedCommsShoreside.moos
+
+#ifdef SIMULATION
+#include ../resources/plugs/plug_pAcommsSimulator.moos
+#endif

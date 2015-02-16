@@ -47,19 +47,14 @@ fi
 #  Part 2: Create the shoreside.moos file
 #-------------------------------------------------------
 
-# if in simulation, change some configuration
 if $SIMULATION ; then
-    HARD_CONFIG["NOSTROMO:VHOST"]="localhost"
-    HARD_CONFIG["SILVANA:VHOST"]="localhost"
-    HARD_CONFIG["KESTREL:VHOST"]="localhost"
-    VHOST_ICARUS="localhost"
-    SHOREHOST="localhost"
+    nsplug meta_shoreside.moos targ_shoreside.moos -f \
+        SHOREHOST=localhost SIMULATION=1 \
+        VHOST1=localhost VHOST2=localhost \
+        VHOST3=localhost VHOST4=localhost
+else
+    nsplug meta_shoreside.moos targ_shoreside.moos -f
 fi
-
-nsplug meta_shoreside.moos targ_shoreside.moos -f       \
-    LPORT=$SLPORT      VPORT=$SPORT                     \
-    VNAME=$SNAME       WARP=$WARP                       \
-    VHOST=$SHOREHOST                                    
 
 if $JUST_BUILD ; then
     exit 0

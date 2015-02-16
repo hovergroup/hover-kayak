@@ -67,6 +67,7 @@ SingleDriverSim::SingleDriverSim(string name, MOOS::MOOSAsyncCommClient * comms)
     m_navheading = 0;
     m_navspeed = 0;
     m_postVariable = "ACOMMS_SIM_OUT_" + m_name;
+    m_state = READY;
 }
 
 bool SingleDriverSim::updateWithReport(const AcommsSimReport &asr) {
@@ -177,6 +178,9 @@ void SingleDriverSim::doWork() {
             cout << m_name << " advanced to state " << DriverStatusNameMap.at(m_state)
                     << " after " << m_postQueue.front().post_time-m_queueStartTime << " seconds." << endl;
             m_postQueue.pop_front();
+
+            if (m_postQueue.empty())
+                break;
         }
     }
 }
@@ -223,14 +227,14 @@ bool AcommsSimulator::OnNewMail(MOOSMSG_LIST &NewMail) {
 
     for (p = NewMail.begin(); p != NewMail.end(); p++) {
         CMOOSMsg &msg = *p;
-        std::string key = msg.GetString();
+        std::string key = msg.GetKey();
 
         // report updates
         if (key == "ACOMMS_SIM_REPORT") {
             AcommsSimReport asr;
-            if (asr.ParseFromString(msg.GetString()))
+            if (asr.ParseFromString(msg.GetString())) {
                 handleReport(asr);
-            else
+            } else
                 cout << "Error parsing report protobuf" << endl;
         }
 
@@ -248,6 +252,7 @@ bool AcommsSimulator::OnNewMail(MOOSMSG_LIST &NewMail) {
                             << source_vehicle << " among reporting vehicles."
                             << endl;
                 } else {
+                    cout << "Handling new transmission from " << source_vehicle << endl;
                     handleNewTransmission(trans, source_vehicle);
                 }
             } else
@@ -401,22 +406,39 @@ void AcommsSimulator::createReception(const goby::acomms::protobuf::ModemTransmi
 
     reception.CopyFrom(transmission);
 
-    // add receive statistics (extra for FSK 0)
+    // add extra stat for fsk0
     int stat_index = 0;
     if (reception.rate() == 0) {
         reception.AddExtension(micromodem::protobuf::receive_stat);
+        micromodem::protobuf::ReceiveStatistics fsk_mini_stat = getCompleteStat();
+        reception.MutableExtension(micromodem::protobuf::receive_stat, 0)->CopyFrom(fsk_mini_stat);
         stat_index = 1;
     }
     reception.AddExtension(micromodem::protobuf::receive_stat);
-    reception.MutableExtension(micromodem::protobuf::receive_stat, stat_index)->
-            set_number_frames(reception.frame_size());
+
+    // add main statistics
+    micromodem::protobuf::ReceiveStatistics main_stat = getCompleteStat();
+    if (transmission.type() == goby::acomms::protobuf::ModemTransmission::DRIVER_SPECIFIC) {
+        if (transmission.GetExtension(micromodem::protobuf::type)==micromodem::protobuf::MICROMODEM_REMUS_LBL_RANGING) {
+            // lbl
+        } else {
+            // mini
+        }
+    } else {
+        main_stat.set_rate(transmission.rate());
+    }
+    main_stat.set_number_frames(reception.frame_size());
+    main_stat.set_number_bad_frames(0);
+    main_stat.set_source(transmission.src());
+    main_stat.set_dest(transmission.dest());
+    reception.MutableExtension(micromodem::protobuf::receive_stat, stat_index)->CopyFrom(main_stat);
 
     bool source_ranging = m_singleSims[source_vehicle].getRangingEnabled();
     bool dest_ranging = m_singleSims[dest_vehicle].getRangingEnabled();
     if (source_ranging && dest_ranging) {
         // ranging enabled on both - get actual time of flight
         micromodem::protobuf::RangingReply rr;
-        rr.set_one_way_travel_time(0,getTimeOfFlight(source_vehicle, dest_vehicle));
+        rr.add_one_way_travel_time(getTimeOfFlight(source_vehicle, dest_vehicle));
         reception.MutableExtension(micromodem::protobuf::ranging_reply)->CopyFrom(rr);
     } else if (!source_ranging && dest_ranging) {
         // ranging enabled on dest only - add random offset
@@ -425,9 +447,36 @@ void AcommsSimulator::createReception(const goby::acomms::protobuf::ModemTransmi
         while (time_of_flight > 1) {
             time_of_flight-=1;
         }
-        rr.set_one_way_travel_time(0,time_of_flight);
+        rr.add_one_way_travel_time(time_of_flight);
         reception.MutableExtension(micromodem::protobuf::ranging_reply)->CopyFrom(rr);
     }
+}
+
+micromodem::protobuf::ReceiveStatistics AcommsSimulator::getCompleteStat() {
+    micromodem::protobuf::ReceiveStatistics stat;
+    stat.set_mode(micromodem::protobuf::INVALID_RECEIVE_MODE);
+    stat.set_time(MOOSTime());
+    stat.set_clock_mode(micromodem::protobuf::INVALID_CLOCK_MODE);
+    stat.set_mfd_power(-1);
+    stat.set_mfd_ratio(-1);
+    stat.set_rate(-1);
+    stat.set_source(-1);
+    stat.set_dest(-1);
+    stat.set_psk_error_code(micromodem::protobuf::INVALID_PSK_ERROR_CODE);
+    stat.set_packet_type(micromodem::protobuf::PACKET_TYPE_UNKNOWN);
+    stat.set_number_frames(-1);
+    stat.set_number_bad_frames(-1);
+    stat.set_snr_rss(-1);
+    stat.set_snr_in(-1);
+    stat.set_snr_out(-1);
+    stat.set_snr_symbols(-1);
+    stat.set_mse_equalizer(-1);
+    stat.set_data_quality_factor(-1);
+    stat.set_doppler(-1);
+    stat.set_stddev_noise(-1);
+    stat.set_carrier_freq(-1);
+    stat.set_bandwidth(-1);
+    return stat;
 }
 
 LossType AcommsSimulator::calculateLoss(goby::acomms::protobuf::ModemTransmission & reception,
@@ -450,21 +499,25 @@ LossType AcommsSimulator::calculateLoss(goby::acomms::protobuf::ModemTransmissio
     // implement selected loss type
     switch (loss) {
     case NONE:
+        cout << "No loss from " << source_vehicle << " to " << dest_vehicle << endl;
         // do nothing
         return NONE;
         break;
 
     case PARTIAL:
+        cout << "Partial loss from " << source_vehicle << " to " << dest_vehicle << endl;
         applyPartialLoss(reception);
         return PARTIAL;
         break;
 
     case COMPLETE:
+        cout << "Complete loss from " << source_vehicle << " to " << dest_vehicle << endl;
         applyCompleteLoss(reception);
         return COMPLETE;
         break;
 
     case SYNC:
+        cout << "Sync loss from " << source_vehicle << " to " << dest_vehicle << endl;
         // whole transmission missed, so no need for action
         return SYNC;
         break;
@@ -489,7 +542,7 @@ void AcommsSimulator::applyPartialLoss(goby::acomms::protobuf::ModemTransmission
     if (num_bad == 0) {
         double rand = randZeroToOne() * num_frames;
         for (int i=0; i<num_frames; i++) {
-            if (rand < i) {
+            if (rand < i+1) {
                 bad_frames[i] = true;
                 break;
             }
@@ -500,7 +553,7 @@ void AcommsSimulator::applyPartialLoss(goby::acomms::protobuf::ModemTransmission
     if (num_bad == num_frames) {
         double rand = randZeroToOne() * num_frames;
         for (int i=0; i<num_frames; i++) {
-            if (rand < i) {
+            if (rand < i+1) {
                 bad_frames[i] = false;
                 break;
             }
@@ -514,6 +567,16 @@ void AcommsSimulator::applyPartialLoss(goby::acomms::protobuf::ModemTransmission
             reception.AddExtension(micromodem::protobuf::frame_with_bad_crc, i);
         }
     }
+
+    int index = reception.ExtensionSize(micromodem::protobuf::receive_stat)-1;
+    reception.MutableExtension(micromodem::protobuf::receive_stat, index)->set_number_bad_frames(num_bad);
+
+    cout << "Bad frames: ";
+    for (int i=0; i<num_frames; i++) {
+        if (bad_frames[i])
+            cout << i << " ";
+    }
+    cout << endl;
 }
 
 void AcommsSimulator::applyCompleteLoss(goby::acomms::protobuf::ModemTransmission & reception) {
@@ -522,6 +585,9 @@ void AcommsSimulator::applyCompleteLoss(goby::acomms::protobuf::ModemTransmissio
         reception.set_frame(i,"");
         reception.AddExtension(micromodem::protobuf::frame_with_bad_crc, i);
     }
+
+    int index = reception.ExtensionSize(micromodem::protobuf::receive_stat)-1;
+    reception.MutableExtension(micromodem::protobuf::receive_stat, index)->set_number_bad_frames(num_frames);
 }
 
 void AcommsSimulator::publishWarning(string msg) {
