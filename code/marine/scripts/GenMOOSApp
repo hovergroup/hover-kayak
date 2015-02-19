@@ -38,9 +38,10 @@ SET(SRC
 ADD_EXECUTABLE($2$1 \${SRC})
 
 TARGET_LINK_LIBRARIES($2$1
-    ${MOOS_LIBRARIES}
-    ${MOOS_DEPEND_LIBRARIES}
-    mbutil)
+    mbutil
+    \${MOOS_LIBRARIES}
+    \${MOOS_DEPEND_LIBRARIES}
+    )
 
 EOF
 
@@ -100,7 +101,7 @@ using namespace std;
 int main(int argc, char *argv[])
 {
     string mission_file;
-    string run_command = ${2}${1};
+    string run_command = "${2}${1}";
 
     for(int i=1; i<argc; i++) {
         string argi = argv[i];
