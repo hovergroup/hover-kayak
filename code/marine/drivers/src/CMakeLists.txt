@@ -24,6 +24,7 @@ ADD_SUBDIRECTORY(iIcarus)
 ADD_SUBDIRECTORY(iNSFModem)
 ADD_SUBDIRECTORY(iOS5000_Hover)
 ADD_SUBDIRECTORY(iRTKNAVI)
+ADD_SUBDIRECTORY(iXBee)
 
 ##############################################################################
 #                           END of CMakeLists.txt
