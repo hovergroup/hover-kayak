@@ -53,7 +53,7 @@ private:
 
 	std::vector<char> readBuffer, writeBuffer;
 	boost::mutex writeBufferMutex;
-	int bytesToWrite, buffer_index;;
+	int bytesToWrite, buffer_index;
 
 	// the background loop responsible for interacting with the serial port
 	void serialLoop();
