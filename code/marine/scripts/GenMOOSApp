@@ -1,18 +1,21 @@
 #!/bin/bash
 
 if [ -z "$1" ] ; then
-    echo "GenMOOSApp: usage: $0 [app-name] [prefix]"
+    echo "GenMOOSApp: usage: $0 [app-name] [prefix] [author]"
     exit 0
 fi
 
 if [ -z "$2" ] ; then
-    echo "GenMOOSApp: usage: $0 [app-name] [prefix]"
+    echo "GenMOOSApp: usage: $0 [app-name] [prefix] [author]"
     exit 0
 fi
 
-#if [ -z "$3" ] ; then
-#    $3="YOUR-NAME-HERE"
-#fi
+if [ -z "$3" ] ; then
+    echo "GenMOOSApp: usage: $0 [app-name] [prefix] [author]"
+    exit 0
+fi
+
+NOW=$(date +"%b %d, %Y")
 
 mkdir $2$1
 cd $2$1
@@ -21,8 +24,8 @@ cat >> CMakeLists.txt <<EOF
 # ---------------------------------------------
 # $2$1
 #        File: CMakeLists.txt
-#  Created on: 
-#      Author: 
+#  Created on: $NOW
+#      Author: $3
 # ---------------------------------------------
 
 # FILE(GLOB SRC *.cpp)
@@ -50,8 +53,8 @@ cat >> ${1}.h <<EOF
 /*
  * $3
  *        File: ${1}.h
- *  Created on: 
- *      Author: 
+ *  Created on: $NOW
+ *      Author: $3
  */
 
 #ifndef ${1}_HEADER
@@ -70,13 +73,8 @@ protected:
     bool Iterate();
     bool OnConnectToServer();
     bool OnStartUp();
-    void RegisterVariables();
 
-private: // Configuration variables
-
-private: // State variables
-    unsigned int m_iterations;
-    double       m_timewarp;
+private:
 };
 
 #endif 
@@ -86,8 +84,8 @@ cat >> main.cpp <<EOF
 /*
  * $3
  *        File: main.cpp
- *  Created on: 
- *      Author: 
+ *  Created on: $NOW
+ *      Author: $3
  */
 
 #include <string>
@@ -153,8 +151,8 @@ cat >> ${1}.cpp <<EOF
 /*
  * $3
  *        File: ${1}.cpp
- *  Created on: 
- *      Author: 
+ *  Created on: $NOW
+ *      Author: $3
  */
 
 #include <iterator>
@@ -168,8 +166,6 @@ using namespace std;
 
 ${1}::${1}()
 {
-    m_iterations = 0;
-    m_timewarp   = 1;
 }
 
 //---------------------------------------------------------
@@ -188,17 +184,10 @@ bool ${1}::OnNewMail(MOOSMSG_LIST &NewMail)
 
     for(p=NewMail.begin(); p!=NewMail.end(); p++) {
         CMOOSMsg &msg = *p;
-
-#if 0 // Keep these around just for template
-    string key   = msg.GetKey();
-    string comm  = msg.GetCommunity();
-    double dval  = msg.GetDouble();
-    string sval  = msg.GetString(); 
-    string msrc  = msg.GetSource();
-    double mtime = msg.GetTime();
-    bool   mdbl  = msg.IsDouble();
-    bool   mstr  = msg.IsString();
-#endif
+        string key = msg.GetKey();
+        if (key == "VARIABLE") {
+            string val = msg.GetString();
+        }
     }
 
     return(true);
@@ -209,13 +198,8 @@ bool ${1}::OnNewMail(MOOSMSG_LIST &NewMail)
 
 bool ${1}::OnConnectToServer()
 {
-    // register for variables here
-    // possibly look at the mission file?
-    // m_MissionReader.GetConfigurationParam("Name", <string>);
-    // m_Comms.Register("VARNAME", 0);
-
-    RegisterVariables();
-    return(true);
+    m_Comms.Register("VARIABLE", 0);
+    return true;
 }
 
 //---------------------------------------------------------
@@ -224,8 +208,7 @@ bool ${1}::OnConnectToServer()
 
 bool ${1}::Iterate()
 {
-    m_iterations++;
-    return(true);
+    return true;
 }
 
 //---------------------------------------------------------
@@ -234,27 +217,10 @@ bool ${1}::Iterate()
 
 bool ${1}::OnStartUp()
 {
-    list<string> sParams;
-    m_MissionReader.EnableVerbatimQuoting(false);
-    if(m_MissionReader.GetConfiguration(GetAppName(), sParams)) {
-        list<string>::iterator p;
-        for(p=sParams.begin(); p!=sParams.end(); p++) {
-            string original_line = *p;
-            string param = stripBlankEnds(toupper(biteString(*p, '=')));
-            string value = stripBlankEnds(*p);
-            
-            if(param == "FOO") {
-                //handled
-            } else if(param == "BAR") {
-                //handled
-            }
-        }
-    }
+    string config_val;
+    m_MissionReader.GetConfigurationParam("config_var", config_val);
 
-    m_timewarp = GetMOOSTimeWarp();
-
-    RegisterVariables();	
-    return(true);
+    return true;
 }
 
 //---------------------------------------------------------
@@ -272,8 +238,8 @@ cat >> ${1}_Info.h <<EOF
 /*
  * $3
  *        File: ${1}_Info.h
- *  Created on: 
- *      Author: 
+ *  Created on: $NOW
+ *      Author: $3
  */
 
 #ifndef ${1}_INFO_HEADER
@@ -294,8 +260,8 @@ cat >> ${1}_Info.cpp <<EOF
 /*
  * $3
  *        File: ${1}_Info.cpp
- *  Created on: 
- *      Author: 
+ *  Created on: $NOW
+ *      Author: $3
  */
 
 #include <cstdlib>
