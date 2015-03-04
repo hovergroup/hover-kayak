@@ -9,5 +9,5 @@ ProcessConfig = pLogger
     FileTimeStamp   = true
     WildCardLogging = true
 
-    WildCardOmitPattern = PLOGGER_STATUS
+    WildCardOmitPattern = PLOGGER_STATUS, DB_VARSUMMARY
 }
