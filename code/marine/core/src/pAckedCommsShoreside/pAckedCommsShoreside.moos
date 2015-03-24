@@ -1,0 +1,33 @@
+ServerHost = localhost
+ServerPort = 9000
+Community = terra
+
+ProcessConfig = ANTLER
+{
+  Run = pAckedCommsShoreside @ NewConsole=true
+  Run = pEchoVar @ NewConsole = false
+  Run = pAckedCommsVehicle @ NewConsole = false
+}
+
+//------------------------------------------------
+// pAckedCommsShoreside config block
+
+ProcessConfig = pAckedCommsShoreside
+{
+    AppTick   = 4
+    CommsTick = 4
+    
+    vehicles = NOSTROMO,SILVANA,KESTREL
+    
+    BRIDGE = var=MISSION_MODE,repeat=5,delay=0.5
+}
+
+
+ProcessConfig = pEchoVar
+{
+   AppTick = 4
+   CommsTick = 4
+   
+    Echo = ACKEDCOMMS_TRANSMIT_NOSTROMO -> ACKEDCOMMS_TRANSMIT
+   
+}

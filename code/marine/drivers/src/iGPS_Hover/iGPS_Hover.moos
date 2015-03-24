@@ -1,0 +1,12 @@
+ProcessConfig = iGPS_Hover
+{
+    AppTick = 1
+    
+    PORT_NAME = /dev/ttyUSB0
+    BAUD_RATE = 57600
+    
+    TCP_SERVER = localhost
+    TCP_PORT = 50000
+    
+    USE_TCP = false
+}

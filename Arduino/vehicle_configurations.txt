@@ -1,0 +1,13 @@
+                Location in Code:   Kestrel:    Silvana:    Nostromo:
+SBUS                                Serial3     Serial3     Serial3
+Roboteq                             Serial2     Serial2     Serial2
+Gumstix                             Serial1     Serial1     Serial1
+Vbatt relay                         56          56          56
+12v relay                           55          55          55
+Servo power                         57          57          57
+Servo pwm                           A0          A0          A0
+restart pin                         12          12          12
+radio switch                        58          58          58
+rudder center                       1620        1620        1462
+rudder 60                           587         587         587
+version                             v2          v2          v3

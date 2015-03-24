@@ -1,0 +1,28 @@
+#!/bin/bash
+
+if (("$#" < 1)) ; then
+    exit 0
+fi
+
+VEHICLES=$1
+
+echo $VEHICLES
+
+for (( i=0; i<${#VEHICLES}; i++ )) ; do
+    LETTER=${VEHICLES:$i:1}
+
+    case $LETTER in
+        [iI] )  echo "Icarus"
+            logfetch --vehicle=ICARUS ;;
+        [nN] )  echo "Nostromo"
+            logfetch --vehicle=NOSTROMO ;;
+        [tT] )  echo "Terra"
+            logfetch --vehicle=TERRA --local ;;
+        [sS] )  echo "Silvana"
+            logfetch --vehicle=SILVANA;;
+        [kK] )  echo "Kestrel"
+            logfetch --vehicle=KESTREL;;
+        *) echo "Invalid: $LETTER" ;;
+    esac
+
+done

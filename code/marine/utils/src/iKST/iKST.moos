@@ -1,0 +1,15 @@
+//------------------------------------------------
+// iKST config block
+
+ProcessConfig = iKST
+{
+    AppTick   = 4
+
+    output_path = "/home/josh/kst.csv"
+
+    LOG = NAV_X
+    LOG = NAV_Y
+    LOG = NAV_HEADING
+    LOG = DESIRED_HEADING
+}
+

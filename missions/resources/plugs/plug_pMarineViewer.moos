@@ -1,0 +1,53 @@
+//--------------------------------------------------------
+ProcessConfig = pMarineViewer
+{
+    IterateMode = 0    // regular iterate and mail
+    AppTick     = 4
+
+  //TIFF_FILE     = ../../trunk/data/AerialMIT.tif
+  
+    center_view_true = true
+  center_view_sticky = true
+
+  HASH_VIEW     = false
+  HASH_DELTA    = 100
+  HASH_SHADE    = 0.45
+  BACK_SHADE    = 0.70
+
+          trails_viewable = true
+        trails_point_size = 1
+       polygon_edge_color = white
+     polygon_vertex_color = light_green
+       polygon_edge_width = 1
+  polygon_viewable_labels = false
+  
+      seglist_vertex_size = 4
+        point_vertex_size = 8
+
+      vehicle_shape_scale = 3
+  vehicles_name_viewable = names
+                     zoom = 1.7
+                set_pan_x = 0
+                set_pan_y = 80
+
+    scope  = NODE_REPORT
+    scope  = VIEW_POINT
+    scope  = VIEW_SEGLIST
+    scope  = VIEW_POLYGON
+
+    ACTION = GOSTAY_NOSTROMO =true
+    ACTION = GOSTAY_NOSTROMO =false
+    ACTION = GOSTAY_SILVANA =true
+    ACTION = GOSTAY_SILVANA =false
+    ACTION = GOSTAY_KESTREL =true
+    ACTION = GOSTAY_KESTREL =false
+
+    right_context[nostromo] = GOTO_UPDATES_NOSTROMO= points=$(XPOS),$(YPOS)
+    right_context[silvana] = GOTO_UPDATES_SILVANA= points=$(XPOS),$(YPOS)
+    right_context[kestrel] = GOTO_UPDATES_KESTREL= points=$(XPOS),$(YPOS)
+
+    BUTTON_ONE   = DEPLOY  # MISSION_MODE_ALL = GOTO # MOOS_MANUAL_OVERRIDE_ALL = false
+    BUTTON_TWO   = RETURN  # MISSION_MODE_ALL = RETURN # MOOS_MANUAL_OVERRIDE_ALL = false
+    BUTTON_THREE = STATION # MISSION_MODE_ALL = STATION-KEEP # MOOS_MANUAL_OVERRIDE_ALL = false
+    BUTTON_FOUR  = ALLSTOP # MISSION_MODE_ALL = INACTIVE # MOOS_MANUAL_OVERRIDE_ALL = true
+}

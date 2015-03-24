@@ -1,0 +1,11 @@
+ProcessConfig = iOS5000_Hover
+{
+    IterateMode = 0    // regular iterate and mail
+    AppTick     = 1
+
+    Port        = $(OS5000PORT)
+    Speed       = 57600
+    PreRotation = -15            // -15 for Boston (magnetic declination)
+
+    FilterTimeConstant = 1
+}

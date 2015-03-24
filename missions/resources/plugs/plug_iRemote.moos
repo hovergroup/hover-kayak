@@ -1,0 +1,13 @@
+ProcessConfig = iRemote
+{
+    IterateMode = 0    // regular iterate and mail
+    AppTick     = 5
+
+    CustomKey = 1 : HELM_VERBOSE @ "verbose"
+    CustomKey = 2 : HELM_VERBOSE @ "terse"
+    CustomKey = 3 : HELM_VERBOSE @ "quiet"
+    CustomKey = 4 : DEPLOY @ "true"
+    CustomKey = 5 : DEPLOY @ "false"
+    CustomKey = 6 : RETURN @ "true"
+    CustomKey = 7 : RETURN @ "false"
+}

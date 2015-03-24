@@ -1,0 +1,9 @@
+//------------------------------------------------
+// pWTStatusView config block
+
+ProcessConfig = pWTStatusView
+{
+   AppTick   = 4
+   CommsTick = 4
+}
+

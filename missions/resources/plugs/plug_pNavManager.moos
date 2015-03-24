@@ -1,0 +1,13 @@
+ProcessConfig = pNavManager
+{
+    IterateMode = 1    // comms driven iterate and mail
+    AppTick     = 4    // iterate lower bound
+    MaxAppTick  = 0    // no limit
+  
+    timeout = 5      // timeout before abandoning a nav source
+    
+    source1 = rtk_fix
+    source2 = rtk_float
+    source3 = gps
+    source4 = rtk_single
+}

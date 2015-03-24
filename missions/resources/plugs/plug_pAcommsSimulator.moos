@@ -1,0 +1,11 @@
+ProcessConfig = pAcommsSimulator
+{
+    IterateMode = 0    // regular iterate and mail
+    AppTick     = 20
+
+    sound_speed = 1450
+    p_partial_loss = 0.1
+    p_complete_loss = 0.1
+    p_sync_loss = 0.1
+    p_loss_per_frame = 0.5
+}

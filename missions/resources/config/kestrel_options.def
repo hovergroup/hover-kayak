@@ -1,0 +1,6 @@
+#define RUDDER_OFFSET 0
+#define ACOMMSID 5
+#define TransmitOffset 30
+#define TransmitPeriod 40
+#define RETURN_PT 20,-15
+#define CRUISESPEED 1

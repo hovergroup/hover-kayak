@@ -1,0 +1,8 @@
+ProcessConfig = iIcarus
+{
+    AppTick   = 1
+    IterateMode = 0 // regular iterate and mail
+    
+    BAUD_RATE = 9600
+    PORT_NAME = $(ARDUINO_PORT)
+}

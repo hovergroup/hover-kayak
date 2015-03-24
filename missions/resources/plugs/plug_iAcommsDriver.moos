@@ -1,0 +1,18 @@
+ProcessConfig = iAcommsDriver
+{
+    IterateMode = 0    // regular iterate and mail
+    AppTick     = 5
+
+    PortName = $(MODEMPORT)
+    ID       = $(ACOMMSID)
+
+    PSK_minipackets   = false
+    enable_ranging    = true
+    show_range_pulses = true
+
+#ifdef SIMULATION
+    in_sim = true
+    sim_server = $(SHOREHOST)
+    sim_port = $(SPORT)
+#endif
+}

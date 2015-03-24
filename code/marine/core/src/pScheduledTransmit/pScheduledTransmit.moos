@@ -1,0 +1,33 @@
+// MOOS file
+
+ServerHost = localhost
+ServerPort = 9000
+Community = test
+
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+  
+    Run = MOOSDB @ NewConsole = false
+    Run = pScheduledTransmit @ NewConsole = false ~pScheduledTransmit_a
+    Run = pScheduledTransmit @ NewConsole = false ~pScheduledTransmit_b   
+}
+
+ProcessConfig = pScheduledTransmit_a
+{
+   IterateMode = 0 // regular iterate and mail
+   AppTick = 20
+   
+   period = 5
+   offset = 0
+}
+
+ProcessConfig = pScheduledTransmit_b
+{
+   IterateMode = 0 // regular iterate and mail
+   AppTick = 20
+   
+   period = 5
+   offset = 2.5
+}
+

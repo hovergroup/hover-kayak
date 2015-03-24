@@ -1,0 +1,14 @@
+ProcessConfig = iHoverKayak
+{
+    AppTick   = 20
+    MaxAppTick = 100
+    IterateMode = 1 // comms driven iterate and mail
+    
+    BAUD_RATE = 115200
+    PORT_NAME = /dev/ttyO0
+    
+    INVERT_RUDDER = false
+    RUDDER_OFFSET = 0
+    
+    RADIO_WAIT_TIME = 120
+}

@@ -1,0 +1,9 @@
+//------------------------------------------------
+// pSmartCommsVehicle config block
+
+ProcessConfig = pSmartCommsVehicle
+{
+    AppTick = 5
+    IterateMode = 0 // regular iterate and mail
+}
+

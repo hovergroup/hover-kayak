@@ -1,0 +1,13 @@
+ProcessConfig = pAckedCommsShoreside
+{
+    IterateMode = 1    // comms driven iterate and mail
+    AppTick     = 20    // iterate lower bound
+    MaxAppTick  = 0    // no limit
+    
+    vehicles = NOSTROMO,SILVANA,KESTREL,ICARUS
+    
+    BRIDGE = var=MISSION_MODE,repeat=5,delay=0.5
+    BRIDGE = var=MOOS_MANUAL_OVERRIDE,repeat=5,delay=0.5
+    BRIDGE = var=GOTO_UPDATES,repeat=5,delay=0.5
+    BRIDGE = var=SCHEDULED_TRANSMITS,repeat=5,delay=0.5
+}

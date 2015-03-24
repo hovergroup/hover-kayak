@@ -1,0 +1,30 @@
+#ifndef SHOREHOST
+    #define SHOREHOST 192.168.1.100
+#endif
+#define SLPORT 9001
+#define SPORT 9000
+#define SNAME TERRA
+
+#define VNAME1 ICARUS
+#ifndef VHOST1
+#define VHOST1 192.168.1.102
+#endif
+#define LPORT1 9201
+
+#define VNAME2 NOSTROMO
+#ifndef VHOST2
+#define VHOST2 192.168.1.103
+#endif
+#define LPORT2 9301
+
+#define VNAME3 SILVANA
+#ifndef VHOST3
+#define VHOST3 192.168.1.104
+#endif
+#define LPORT3 9401
+
+#define VNAME4 KESTREL
+#ifndef VHOST4
+#define VHOST4 192.168.1.105
+#endif
+#define LPORT4 9501

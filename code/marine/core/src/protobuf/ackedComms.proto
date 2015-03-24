@@ -1,0 +1,25 @@
+/*
+ * hovergroup_proto
+ *        File: ackedComms.proto
+ *  Created on: May 24, 2014
+ *      Author: Josh Leighton
+ */
+
+message AckedTransmissionProto {
+    required string var_name = 1;
+    optional double double_val = 2;
+    optional string string_val = 3;
+    
+    required TypeEnum type = 4;
+    enum TypeEnum {
+        DOUBLE = 0;
+        STRING = 1;
+        BINARY_STRING = 2;
+    }
+    
+    required uint32 id = 5;
+}
+
+message ReturnAck {
+    required uint32 id = 1;
+}

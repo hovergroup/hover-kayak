@@ -1,0 +1,9 @@
+//------------------------------------------------
+// pProtoReportParser config block
+
+ProcessConfig = pProtoReportParser
+{
+   AppTick   = 4
+   CommsTick = 4
+}
+

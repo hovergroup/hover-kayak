@@ -1,0 +1,7 @@
+ProcessConfig = pProtoReporter
+{
+    IterateMode = 0    // regular iterate and mail
+    AppTick     = 1
+  
+    PLATFORM_TYPE = KAYAK
+}

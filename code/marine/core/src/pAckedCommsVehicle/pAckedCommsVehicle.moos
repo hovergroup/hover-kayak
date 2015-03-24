@@ -1,0 +1,9 @@
+//------------------------------------------------
+// pAckedCommsVehicle config block
+
+ProcessConfig = pAckedCommsVehicle
+{
+   AppTick   = 4
+   CommsTick = 4
+}
+

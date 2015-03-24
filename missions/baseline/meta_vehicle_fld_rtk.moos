@@ -1,0 +1,67 @@
+#include ../resources/config/shoreside.def
+
+#ifdef KESTREL
+    #include ../resources/config/kestrel.def
+    #include ../resources/config/kestrel_options.def
+#elseifdef SILVANA
+    #include ../resources/config/silvana.def
+    #include ../resources/config/silvana_options.def
+#elseifdef NOSTROMO
+    #include ../resources/config/nostromo.def
+    #include ../resources/config/nostromo_options.def
+#endif
+
+ServerHost = $(VHOST)
+ServerPort = $(VPORT)
+Community  = $(VNAME)
+
+#include ../resources/plugs/plug_origin_warp.moos
+  
+//------------------------------------------------------------
+Processconfig = ANTLER
+{
+  MSBetweenLaunches = 200
+   
+  Run = MOOSDB                 @ NewConsole = false
+  Run = pShare                 @ NewConsole = false
+  Run = pLogger                @ NewConsole = false
+  Run = pProtoReporter         @ NewConsole = false
+  Run = pMarinePID_Hover       @ NewConsole = false
+  Run = pHelmIvP               @ NewConsole = false
+  Run = iRTKNAVI               @ NewConsole = false
+  Run = iGPS_Hover             @ NewConsole = false
+  Run = iOS5000_Hover          @ NewConsole = false
+  Run = pEchoVar               @ NewConsole = false
+  Run = iHoverKayak            @ NewConsole = false
+  Run = iAcommsDriver          @ NewConsole = false
+  Run = pNavManager            @ NewConsole = false
+  Run = pResourceMon           @ NewConsole = false
+  Run = pAckedCommsVehicle     @ NewConsole = false
+  Run = pScheduledTransmit     @ NewConsole = false
+
+#ifdef tritech
+  Run = iAltimeter             @ NewConsole = false
+#elseifdef cruzpro
+  Run = iAltimeter_cruzPro     @ NewConsole = false
+#endif
+}
+
+#include ../resources/plugs/plug_iKST.moos
+#include ../resources/plugs/plug_pShareV.moos
+#include ../resources/plugs/plug_pLogger.moos
+#include ../resources/plugs/plug_pProtoReporter.moos
+#include ../resources/plugs/plug_pMarinePID_Hover.moos
+#include ../resources/plugs/plug_pHelmIvP.moos
+#include ../resources/plugs/plug_pEchoVar.moos
+#include ../resources/plugs/plug_iOS5000_Hover.moos
+#include ../resources/plugs/plug_iRTKNAVI.moos
+#include ../resources/plugs/plug_iRemote.moos
+#include ../resources/plugs/plug_iHoverKayak.moos
+#include ../resources/plugs/plug_iAcommsDriver.moos
+#include ../resources/plugs/plug_iAltimeter.moos
+#include ../resources/plugs/plug_iAltimeter_cruzPro.moos
+#include ../resources/plugs/plug_pNavManager.moos
+#include ../resources/plugs/plug_iGPS_Hover.moos
+#include ../resources/plugs/plug_pResourceMon.moos
+#include ../resources/plugs/plug_pAckedCommsVehicle.moos
+#include ../resources/plugs/plug_pScheduledTransmit.moos

@@ -1,0 +1,11 @@
+ProcessConfig = pShare
+{
+    IterateMode = 0    // regular iterate and mail
+    AppTick     = 4
+  
+    output = PROTO_REPORT_LOCAL->PROTO_REPORT:$(SHOREHOST):$(SLPORT)
+    output = VIEW_RANGE_PULSE->$(SHOREHOST):$(SLPORT)
+    output = ACKEDCOMMS_RETURN_ACK->$(SHOREHOST):$(SLPORT)
+  
+    input = route=$(VHOST):$(LPORT) 
+}
