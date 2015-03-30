@@ -17,44 +17,28 @@ include(FindProtobuf)
 find_package(Protobuf REQUIRED)
 include_directories(${PROTOBUF_INCLUDE_DIR})
 
-SET(BUILD_SHORE_APPS TRUE CACHE BOOL "Build shore apps")
-
-#=============================================================================
-# Find the hovergroup trunk
-#=============================================================================
-
-find_path( HOVERGROUP_LIBRARIES
-			NAMES src/lib_HoverAcomms
-			PATHS "../libraries"
-			NO_DEFAULT_PATH
-)
-
-FILE(GLOB HOVERGROUP_LIB_DIRECTORIES 
-    ${HOVERGROUP_LIBRARIES}/src/lib_*
-    ${HOVERGROUP_LIBRARIES}/src/protobuf)
-
-set ( HOVERGROUP_INCLUDE_DIRECTORIES
-		${HOVERGROUP_LIB_DIRECTORIES}
-		${HOVERGROUP_LIBRARIES}/src/ )
-		
-set ( HOVERGROUP_LIBRARY_PATH
-		${HOVERGROUP_LIBRARIES}/lib/ )
+set (BOOST_OVER_146 0)
+OPTION (BOOST_146 "boost v. at least 1.46" TRUE)
+if ( BOOST_146 )
+  set (BOOST_OVER_146 1)
+endif()
+CONFIGURE_FILE(src/lib_JoshUtils/config.h.in src/lib_JoshUtils/config.h)
 
 #=============================================================================
 # Find the "goby" base directory
 #=============================================================================
 
-find_path( 	GOBY_BASE
-			NAMES DEPENDENCIES build.sh AUTHORS
-            PATHS "~/goby" "../../../../goby"
-			NO_DEFAULT_PATH
+find_path(     GOBY_BASE
+            NAMES DEPENDENCIES build.sh AUTHORS
+            PATHS "~/goby" "../../../goby"
+            NO_DEFAULT_PATH
 )
 
 set( GOBY_INCLUDE_DIRS
-	${GOBY_BASE}/include )
-	
+    ${GOBY_BASE}/include )
+    
 set( GOBY_LIBRARY_PATH
-	${GOBY_BASE}/lib )
+    ${GOBY_BASE}/lib )
 
 #=============================================================================
 # Find the "moos-ivp" base directory
@@ -63,7 +47,7 @@ set( GOBY_LIBRARY_PATH
 # Search for the moos-ivp folder
 find_path( MOOSIVP_SOURCE_TREE_BASE
            NAMES ivp
-           PATHS "../moos-ivp" "../../../../moos-ivp" "../../../../moos-ivp/trunk/" "../moos-ivp/trunk/" "~/moos-ivp"
+           PATHS "../moos-ivp" "../../../moos-ivp" "../../../moos-ivp/trunk/" "../moos-ivp/trunk/" "~/moos-ivp"
            DOC "Base directory of the MOOS-IvP source tree"
            NO_DEFAULT_PATH
 )
@@ -73,8 +57,6 @@ if (NOT MOOSIVP_SOURCE_TREE_BASE)
     message("the location of the \"moos-ivp\" folder ")
     return()
 endif()
-
-GET_FILENAME_COMPONENT(MOOS_BASE_DIR "${MOOSIVP_SOURCE_TREE_BASE}/MOOS" ABSOLUTE)
 
 
 #=============================================================================
@@ -92,17 +74,15 @@ FILE(GLOB IVP_LIBRARY_DIRS ${MOOSIVP_SOURCE_TREE_BASE}/lib )
 find_package(MOOS 10)
 find_package(MOOSGeodesy)
 
-LINK_DIRECTORIES(       ${IVP_LIBRARY_DIRS}
-    			        ${GOBY_LIBRARY_PATH}
-    			        ${HOVERGROUP_LIBRARY_PATH}	)
-
-INCLUDE_DIRECTORIES(	${MOOS_INCLUDE_DIRS}
+INCLUDE_DIRECTORIES(    ${MOOS_INCLUDE_DIRS}
                         ${MOOS_DEPEND_INCLUDE_DIRS}
                         ${MOOSGeodesy_INCLUDE_DIRS}
-            			${GOBY_INCLUDE_DIRS}
-            			${IVP_INCLUDE_DIRS}
-            			${HOVERGROUP_INCLUDE_DIRECTORIES}	)
-
+                           ${GOBY_INCLUDE_DIRS}
+                           ${IVP_INCLUDE_DIRS}
+                           /usr/include/qt4/            )
+                           
+LINK_DIRECTORIES( ${IVP_LIBRARY_DIRS}
+                  ${GOBY_LIBRARY_PATH} )
 
 #=============================================================================
 # Set the output directories for the binary and library files
