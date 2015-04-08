@@ -3,8 +3,8 @@
 FOLDERDATE=$(date +%Y_%m_%d)
 
 
-if [ -d "/media/Data" ]; then
-    cd /media/Data
+if [ -d "/media/data" ]; then
+    cd /media/data
 else
     cd $HOME/logfetch
 fi
