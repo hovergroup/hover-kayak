@@ -78,7 +78,7 @@ if [ "${LOCAL}" = "no" ] ; then
 
 #scp josh@${VEHICLE}:/home/josh/logs/${TARNAME} ${TARNAME}
 mkdir ${VEHICLE}
-rsync -r --progress josh@${VEHICLE}:/home/josh/logs/*_${VEHICLE}_${MOOSDATE}* ${VEHICLE}
+rsync -r --progress mit@${VEHICLE}:/home/mit/logs/*_${VEHICLE}_${MOOSDATE}* ${VEHICLE}
 TARNAME="LOG_${VEHICLE}_${MOOSDATE}.tar.bz2"
 tar cvfj ${TARNAME} ${VEHICLE}/*
 rm -r ${VEHICLE}
@@ -90,13 +90,13 @@ else
 
 TARNAME="LOG_${VEHICLE}_${MOOSDATE}.tar.bz2"
 
-if test $(find /home/josh/logs -maxdepth 1 -name *_${VEHICLE}_${MOOSDATE}* -print -quit); then
+if test $(find /home/mit/logs -maxdepth 1 -name *_${VEHICLE}_${MOOSDATE}* -print -quit); then
     printf "Found log files.\n"
 else
     echo "No log folders found."
     exit 0
 fi
 
-tar cvfj ${TARNAME} /home/josh/logs/*_${VEHICLE}_${MOOSDATE}*
+tar cvfj ${TARNAME} /home/mit/logs/*_${VEHICLE}_${MOOSDATE}*
 
 fi
