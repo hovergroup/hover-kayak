@@ -5,6 +5,6 @@
 #define VPORT 9500
 #define LPORT 9501
 #define MODEMPORT /dev/ttyUSB1
-#define OS5000PORT /dev/ttyUSB2
+#define OS5000PORT /dev/ttyUSB5
 #define ARDUINO_PORT /dev/ttyO1
-#define TRITECHPORT /dev/ttyUSB0
+#define TRITECHPORT /dev/ttyUSB2
