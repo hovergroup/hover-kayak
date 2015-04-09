@@ -4,7 +4,7 @@ ProcessConfig = pLogger
     AppTick     = 10
 
     File            = LOG_%(VNAME)
-    PATH            = /home/josh/logs/
+    PATH            = /home/mit/logs/
     AsyncLog        = true
     FileTimeStamp   = true
     WildCardLogging = true
