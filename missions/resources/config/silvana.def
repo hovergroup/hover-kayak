@@ -4,7 +4,7 @@
 #define VNAME SILVANA
 #define VPORT 9400
 #define LPORT 9401
-#define MODEMPORT /dev/ttyUSB1
-#define OS5000PORT /dev/ttyUSB2
+#define MODEMPORT /dev/ttyUSB0
+#define OS5000PORT /dev/ttyUSB3
 #define ARDUINO_PORT /dev/ttyO1
-#define TRITECHPORT /dev/ttyUSB0
+#define TRITECHPORT /dev/ttyUSB1
