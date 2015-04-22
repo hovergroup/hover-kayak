@@ -50,6 +50,7 @@ protected:
     static const double receive_pulse_duration = 2;
 
     // vehicle state information
+    std::string m_nav_prefix, m_navx_name, m_navy_name;
     double m_navx, m_navy;
 
     // underlying driver stuff

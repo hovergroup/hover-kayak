@@ -14,5 +14,7 @@ ProcessConfig = iAcommsDriver
     in_sim = true
     sim_server = $(SHOREHOST)
     sim_port = $(SPORT)
+
+    nav_prefix = NAV
 #endif
 }

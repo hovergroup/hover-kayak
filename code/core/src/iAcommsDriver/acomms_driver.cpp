@@ -105,9 +105,9 @@ bool acomms_driver::OnNewMail(MOOSMSG_LIST &NewMail) {
         }
 
         // update x or y location
-        else if (key == "NAV_X") {
+        else if (key == m_navx_name) {
             m_navx = msg.GetDouble();
-        } else if (key == "NAV_Y") {
+        } else if (key == m_navy_name) {
             m_navy = msg.GetDouble();
         }
 
@@ -160,8 +160,8 @@ void acomms_driver::RegisterVariables() {
         m_Comms.Register("SCHEDULER_TRANSMIT", 0);
     }
     m_Comms.Register("LOGGER_DIRECTORY", 1);
-    m_Comms.Register("NAV_X", 1);
-    m_Comms.Register("NAV_Y", 1);
+    m_Comms.Register(m_navx_name, 1);
+    m_Comms.Register(m_navy_name, 1);
     m_Comms.Register("ACOMMS_REQUEST_ACK", 0);
     m_Comms.Register("ACOMMS_TRANSMIT_LOCKOUT", 0);
 
@@ -185,6 +185,12 @@ bool acomms_driver::OnConnectToServer() {
             enable_range_pulses);
     m_MissionReader.GetConfigurationParam("in_sim", in_sim);
     m_MissionReader.GetConfigurationParam("use_scheduler", m_useScheduler);
+
+    m_nav_prefix = "NAV";
+    m_MissionReader.GetConfigurationParam("nav_prefix", m_nav_prefix);
+    m_navx_name = m_nav_prefix + "_X";
+    m_navy_name = m_nav_prefix + "_Y";
+    cout << "Registering for nav from " << m_navx_name << " and " << m_navy_name << endl;
 
     // simulation shore server connection
     if (in_sim) {
