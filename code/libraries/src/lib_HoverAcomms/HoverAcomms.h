@@ -78,14 +78,6 @@ public:
 	std::string getLoggableString() const;
 
 	std::string serialize() { return m_protobuf.SerializeAsString(); }
-	std::string serializeWithInfo() {
-		std::stringstream ss;
-		ss << "vname=" << m_vehicleName <<
-			  ":time=" << m_time <<
-			  ":loc=" << m_navx << "," << m_navy << ":" <<
-			  serialize();
-		return ss.str();
-	};
 
 	bool parseFromString(std::string msg);
 	void copyFromProtobuf(const goby::acomms::protobuf::ModemTransmission & proto);
@@ -110,12 +102,25 @@ public:
 
 	std::string verify(bool & ok);
 
+	/*
+	 * Get integer source of transmitting modem.
+	 */
 	int getSource() const { return m_protobuf.src(); }
+
+	/*
+	 * Get integer destination of packet - typically 0 for broadcast
+	 */
 	int getDest() const { return m_protobuf.dest(); }
+
+	/*
+	 * How many receive statistics - usually one unless FSK rate 0, then two
+	 */
 	int getNumStats() const { return m_protobuf.ExtensionSize(micromodem::protobuf::receive_stat); }
+
 	int getNumBadFrames() const { return m_protobuf.ExtensionSize(micromodem::protobuf::frame_with_bad_crc); }
 
 	bool hasRanging() const;
+	// one way ranging time
 	double getRangingTime() const;
 
 	ReceiptStatus getStatus() const;
@@ -145,6 +150,8 @@ public:
 	void setDest(int d) { m_protobuf.set_dest(d); }
 	void setAckRequested(bool b) { m_protobuf.set_ack_requested(b); }
 
+	// returns number of bytes filled, or -1 if error
+	// rate must be set before filling data
 	int fillData(const char * data, int length);
 	int fillData(const std::string & data);
 

@@ -132,19 +132,6 @@ AcommsTransmission::AcommsTransmission(std::string data, Rate rate, int dest) {
 bool AcommsBase::parseFromString(std::string msg) {
 	if (msg.empty()) return false;
 
-	m_vehicleName = "";
-	if (msg.find("vname=") != std::string::npos) {
-		MOOSChomp(msg, "vname=");
-		m_vehicleName = MOOSChomp(msg, ":");
-		MOOSChomp(msg, "time=");
-		m_time = atof(MOOSChomp(msg, ":").c_str());
-		MOOSChomp(msg, "loc=");
-		m_navx = atof(MOOSChomp(msg,",").c_str());
-		MOOSChomp(msg, ",");
-		m_navy = atof(MOOSChomp(msg,":").c_str());
-		MOOSChomp(msg, ":");
-	}
-
 	goby::acomms::protobuf::ModemTransmission tmp;
 	if(tmp.ParseFromString(msg)) {
 		m_protobuf.Clear();
