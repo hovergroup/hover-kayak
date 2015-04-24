@@ -244,7 +244,9 @@ bool AcommsSimulator::OnNewMail(MOOSMSG_LIST &NewMail) {
             if (trans.ParseFromString(msg.GetString())) {
                 // get source vehicle name from app name
                 std::string app_name = msg.GetSource();
-                std::string source_vehicle = MOOSToUpper(MOOSChomp(app_name, "_"));
+		cout << "app_name: " << app_name << endl;
+                std::string source_vehicle = MOOSToUpper(MOOSChomp(app_name, "_iAcommsDriver"));
+		cout << "source_vehicle " << source_vehicle << endl;
 
                 // check that we have reports from source vehicle
                 if (!vehicleExists(source_vehicle)) {
