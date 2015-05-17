@@ -1,4 +1,4 @@
-#define RUDDER_OFFSET 0
+#define RUDDER_OFFSET 4
 #define ACOMMSID 5
 #define TransmitOffset 30
 #define TransmitPeriod 40
