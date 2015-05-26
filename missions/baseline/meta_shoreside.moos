@@ -6,6 +6,8 @@ Community  = $(SNAME)
 
 #define VNAME $(SNAME)
 
+MOOSTimeWarp = 10
+
 #include ../resources/plugs/plug_origin_warp.moos
   
 //--------------------------------------------------------
@@ -24,7 +26,7 @@ Processconfig = ANTLER
   Run = pAckedCommsShoreside @ NewConsole = true
 
 #ifdef SIMULATION
-//  Run = pAcommsSimulator     @ NewConsole = true
+  Run = pAcommsSimulator     @ NewConsole = true
 #endif
 
   1 = -geometry,80x30+0+0,-bg,lightgreen,-fg,brown

@@ -36,6 +36,7 @@ using namespace std;
 vector<string> variables, wilds;
 ofstream output;
 string delimiter = ",";
+bool include_ages = true;
 
 void printHelp() {
     cout << "Usage: " << endl;
@@ -65,6 +66,7 @@ void printHelp() {
     cout << "  --backsearch=X   Allow searching up to X seconds in the future " << endl;
     cout << "                   for the nearest posting of each variable.     " << endl;
     cout << "  --delimiter=\"X\"  Set the delimiter string to X.  Default is ,  " << endl;
+    cout << "  --no-ages        Don't include variable age columns            " << endl;
     cout << "                                                                 " << endl;
     cout << "                                                                 " << endl;
     cout << "Further Notes:                                                   " << endl;
@@ -83,7 +85,9 @@ bool entry_sort( ALogEntry e1, ALogEntry e2 ) {
 void printHeader() {
 	output << "time";
 	for ( int i=0; i<variables.size(); i++ ) {
-		output << delimiter << variables[i] << delimiter << variables[i] << "_age";
+		output << delimiter << variables[i];
+		if (include_ages)
+		    output << delimiter << variables[i] << "_age";
 	}
 	output << endl;
 }
@@ -122,6 +126,8 @@ int main (	int argc, char *argv[] ) {
 			delimiter = readCommandArg(string(sarg));
 		} else if ( sarg.find("*")!=string::npos ) {
 			wilds.push_back( sarg );
+		} else if ( sarg == "--no-ages" ) {
+		    include_ages = false;
 		} else {
 			variables.push_back( sarg );
 		}
@@ -413,7 +419,8 @@ string PartialEntry::serialize() {
 	ss << m_time;
 	for ( int i=0; i<m_variables.size(); i++ ) {
 		ss << delimiter << m_values[m_variables[i]];
-		ss << delimiter << m_time-m_times[m_variables[i]];
+		if (include_ages)
+		    ss << delimiter << m_time-m_times[m_variables[i]];
 	}
 	return ss.str();
 }

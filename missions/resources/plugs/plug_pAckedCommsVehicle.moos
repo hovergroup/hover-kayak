@@ -1,6 +1,6 @@
 ProcessConfig = pAckedCommsVehicle
 {
-    IterateMode = 1    // comms driven iterate and mail
-    AppTick     = 1    // iterate lower bound
+    IterateMode = 0    // comms driven iterate and mail
+    AppTick     = 20    // iterate lower bound
     MaxAppTick  = 0    // no limit
 }

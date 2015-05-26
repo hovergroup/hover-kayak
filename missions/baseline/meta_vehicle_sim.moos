@@ -15,6 +15,8 @@ ServerHost = $(VHOST)
 ServerPort = $(VPORT)
 Community  = $(VNAME)
 
+MOOSTimeWarp = 10
+
 #include ../resources/plugs/plug_origin_warp.moos
   
 //------------------------------------------------------------
