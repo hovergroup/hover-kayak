@@ -224,7 +224,8 @@ int main (	int argc, char *argv[] ) {
 				output << entry.getTimeStamp();
 				for ( int j=0; j<variables.size(); j++ ) {
 					output << delimiter << current_value[variables[j]];
-					output << delimiter << entry.getTimeStamp()-current_times[variables[j]];
+					if (include_ages)
+					    output << delimiter << entry.getTimeStamp()-current_times[variables[j]];
 				}
 				output << endl;
 			}
@@ -297,7 +298,8 @@ int main (	int argc, char *argv[] ) {
                 output << last_post_time;
                 for ( int j=0; j<variables.size(); j++ ) {
                     output << delimiter << current_value[variables[j]];
-                    output << delimiter << last_post_time-current_times[variables[j]];
+                    if (include_ages)
+                        output << delimiter << last_post_time-current_times[variables[j]];
                 }
                 output << endl;
                 i--;
