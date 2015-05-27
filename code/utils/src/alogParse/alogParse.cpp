@@ -291,7 +291,7 @@ int main (	int argc, char *argv[] ) {
             current_value[key] = entry.getStringVal();
             current_times[key] = entry.getTimeStamp();
         }
-		for ( int i=1; i<entries.size(); i++ ) {
+		for ( int i=0; i<entries.size(); i++ ) {
 		    entry = entries[i];
             if ( entry.getTimeStamp()-last_post_time > sync_period ) {
                 last_post_time+=sync_period;
@@ -302,7 +302,8 @@ int main (	int argc, char *argv[] ) {
                         output << delimiter << last_post_time-current_times[variables[j]];
                 }
                 output << endl;
-                i--;
+                if (i>0)
+                    i--;
             } else {
                 key = entry.getVarName();
                 if ( find(variables.begin(), variables.end(), key) != variables.end() ) {
@@ -322,14 +323,15 @@ int main (	int argc, char *argv[] ) {
 			current_value[variables[i]] = "-1";
 			current_times[variables[i]] = -100000000;
 		}
-		for ( int i=1; i<entries.size(); i++ ) {
+		for ( int i=0; i<entries.size(); i++ ) {
 			ALogEntry entry = entries[i];
 			string key = entry.getVarName();
             if ( entry.getTimeStamp()-last_post_time > sync_period ) {
                 last_post_time+=sync_period;
                 partials.push_back( PartialEntry(
                         variables, current_value, current_times, last_post_time ) );
-                i--;
+                if (i>0)
+                    i--;
             } else {
                 if ( find(variables.begin(), variables.end(), key) != variables.end() ) {
                     current_value[key] = entry.getStringVal();
