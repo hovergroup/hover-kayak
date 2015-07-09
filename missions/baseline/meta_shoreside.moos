@@ -6,8 +6,6 @@ Community  = $(SNAME)
 
 #define VNAME $(SNAME)
 
-MOOSTimeWarp = 10
-
 #include ../resources/plugs/plug_origin_warp.moos
   
 //--------------------------------------------------------
