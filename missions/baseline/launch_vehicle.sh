@@ -10,6 +10,7 @@ BAD_ARGS=""
 VNAME=""
 ALTIMETER="no_altimeter"
 SIMULATION=false
+HELM=false
 
 #-------------------------------------------------------
 #  Part 1: Process command-line arguments

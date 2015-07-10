@@ -30,6 +30,16 @@ ProcessConfig = pMarineViewer
                 set_pan_x = 0
                 set_pan_y = 80
 
+    // Appcast configuration
+    appcast_height       = 75
+    appcast_width        = 30
+    appcast_viewable     = true
+    appcast_color_scheme = indigo
+    nodes_font_size      = medium
+    procs_font_size      = medium
+    appcast_font_size    = small
+
+
     scope  = NODE_REPORT
     scope  = VIEW_POINT
     scope  = VIEW_SEGLIST
@@ -47,7 +57,10 @@ ProcessConfig = pMarineViewer
     right_context[kestrel] = GOTO_UPDATES_KESTREL= points=$(XPOS),$(YPOS)
 
     BUTTON_ONE   = DEPLOY  # MISSION_MODE_ALL = GOTO # MOOS_MANUAL_OVERRIDE_ALL = false
+    BUTTON_ONE	 = SET_NAV_SOURCE_ALL = RTK
     BUTTON_TWO   = EXPERIMENT  # MISSION_MODE_ALL = EXPERIMENT # MOOS_MANUAL_OVERRIDE_ALL = false
+    BUTTON_TWO	 = SET_NAV_SOURCE_ALL = EXP
     BUTTON_THREE = STATION # MISSION_MODE_ALL = STATION-KEEP # MOOS_MANUAL_OVERRIDE_ALL = false
+    BUTTON_THREE = SET_NAV_SOURCE_ALL = RTK
     BUTTON_FOUR  = ALLSTOP # MISSION_MODE_ALL = INACTIVE # MOOS_MANUAL_OVERRIDE_ALL = true
 }
