@@ -133,10 +133,11 @@ void RTKNAVI::parseLine(std::string sline) {
         m_Comms.Notify("RTK_X", dfXLocal);
         m_Comms.Notify("RTK_Y", dfYLocal);
 
+	double time_curr = MOOSTime();
         if (time_prev != -1) {
             double vel = sqrt(
                     pow(dfXLocal - x_prev, 2) + pow(dfYLocal - y_prev, 2))
-                    / (MOOSTime() - time_prev);
+                    / (time_curr - time_prev);
             vel_history.push_back(vel);
 
             x_history.push_back(dfXLocal);
@@ -163,7 +164,7 @@ void RTKNAVI::parseLine(std::string sline) {
         }
         x_prev = dfXLocal;
         y_prev = dfYLocal;
-        time_prev = MOOSTime();
+        time_prev = time_curr;
     }
 }
 
