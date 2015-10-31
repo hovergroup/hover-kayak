@@ -85,25 +85,25 @@ bool NavManager::OnNewMail(MOOSMSG_LIST &NewMail) {
         else if (key == "EXP_X") {
             exp_x = msg.GetDouble();
             exp_update_time = MOOSTime();
-            if (source == exp)
+            if (source == experiment)
                 m_Comms.Notify("NAV_X", exp_x);
         } else if (key == "EXP_Y") {
             exp_y = msg.GetDouble();
-            if (source == exp)
+            if (source == experiment)
                 m_Comms.Notify("NAV_Y", exp_y);
         } else if (key == "EXP_SPEED") {
-            if (source == exp)
+            if (source == experiment)
                 m_Comms.Notify("NAV_SPEED", msg.GetDouble());
         }
 
         // use compass unless experiment
         else if (key == "COMPASS_HEADING_FILTERED") {
             compass_heading = msg.GetDouble();
-            if (source != exp) {
+            if (source != experiment) {
                 m_Comms.Notify("NAV_HEADING", msg.GetDouble());
             }
         } else if (key == "EXP_HEADING") {
-            if (source == exp) {
+            if (source == experiment) {
                 m_Comms.Notify("NAV_HEADING", msg.GetDouble());
             }
         }
@@ -111,7 +111,7 @@ bool NavManager::OnNewMail(MOOSMSG_LIST &NewMail) {
         else if (key == "SET_NAV_SOURCE") {
             if (MOOSToUpper(msg.GetString()) == "EXP") {
                 if (exp_available)
-                    setSource(exp);
+                    setSource(experiment);
             } else {
                 setSource(none);
             }
@@ -255,19 +255,19 @@ bool NavManager::Iterate() {
     }
 
     // if not using experiment, use best available
-    if (source != exp) {
+    if (source != experiment) {
         setSource(best_available);
     }
 
     // if can't use experiment anymore, change to best available
-    if (source == exp && !exp_available) {
+    if (source == experiment && !exp_available) {
         setSource(best_available);
     }
 
     if (MOOSTime() - last_alternate_post_time > 0.2) {
         last_alternate_post_time = MOOSTime();
         // if using experiment, post secondary nav
-        if (source == exp && MOOSTime()) {
+        if (source == experiment && MOOSTime()) {
             switch (best_available) {
             case rtk:
                 m_Comms.Notify("SECONDARY_NAV_X", rtk_x);
@@ -323,7 +323,7 @@ bool NavManager::Iterate() {
                 m_Comms.Notify("VIEW_POINT", gps_point.get_spec());
             }
 
-            if (source != exp && exp_available) {
+            if (source != experiment && exp_available) {
                 exp_point.set_vx(exp_x);
                 exp_point.set_vy(exp_y);
                 exp_point.set_active(true);
@@ -358,7 +358,7 @@ void NavManager::postSource() {
     case none:
         m_Comms.Notify("NAV_SOURCE", "none");
         break;
-    case exp:
+    case experiment:
         m_Comms.Notify("NAV_SOURCE", "exp");
         break;
     default:

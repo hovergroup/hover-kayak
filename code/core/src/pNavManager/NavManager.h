@@ -13,7 +13,7 @@
 #include <vector>
 
 enum NAV_SOURCE {
-    gps = 0, rtk, none, exp
+    gps = 0, rtk, none, experiment
 };
 
 class NavManager: public CMOOSApp {
