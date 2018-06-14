@@ -25,7 +25,7 @@ fi
 sudo apt-get update
 
 if $VEHICLE ; then
-    sudo apt-get install build-essential libboost-all-dev libgsl0-dev subversion bzr cmake-curses-gui git-core libprotobuf-dev libprotoc-dev protobuf-compiler
+    sudo apt-get install build-essential libboost-all-dev libgsl0-dev cmake-curses-gui git-core libprotobuf-dev libprotoc-dev protobuf-compiler
 else
-    sudo apt-get install build-essential libboost-all-dev libgsl0-dev subversion bzr cmake-curses-gui git-core xterm libtiff4-dev freeglut3-dev libpng12-dev libxft-dev libxinerama-dev fluid default-jre libgmp3-dev witty witty-dev witty-doc witty-dbg
+    sudo apt-get install build-essential libboost-all-dev libgsl0-dev cmake-curses-gui git-core xterm libtiff5-dev freeglut3-dev libpng12-dev libxft-dev libxinerama-dev fluid default-jre libgmp3-dev witty witty-dev witty-doc witty-dbg
 fi
