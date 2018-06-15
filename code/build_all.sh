@@ -36,7 +36,7 @@ if $HELP ; then
 fi
 
 if [ ! -d libraries ] || [ ! -d core ] || [ ! -d scripts ] ; then
-    printf "Must be run in code/marine directory.\n"
+    printf "Must be run in code directory.\n"
     exit 1
 fi
 
