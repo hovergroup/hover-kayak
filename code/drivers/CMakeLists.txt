@@ -1,17 +1,13 @@
 #===========================================================================
-# FILE:  moos-ivp-extend/CMakeLists.txt
-# DATE:  2011/09/07
-# INFO:  Top-level CMakeLists.txt file for the moos-ivp-extend project
-# NAME:  Maintained by Mike Benjamin - Original setup by Christian Convey
-#        Chris Gagner, and tips borrowed from Dave Billin
+# FILE:  hover-kayak/code/drivers/CMakeLists.txt
+# DATE:  2018/06/14
+# INFO:  Top-level CMakeLists.txt file for the hover-kayak/drivers project
+# NAME:  Original setup from moos-ivp-extend and written by Mike Benjamin
 #===========================================================================
 
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
-# We are still supporting version 2.6. However, we will be upgrade to 
-# CMake 2.8 soon. Upgrade to version 2.8 if you can.
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
-
-PROJECT( IVP_EXTEND )
+PROJECT( HOVER_KAYAK )
 
 include(FindProtobuf)
 find_package(Protobuf REQUIRED)

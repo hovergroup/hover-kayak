@@ -1,14 +1,13 @@
 #===========================================================================
-# FILE:  hovergroup/code/marine/core/CMakeLists.txt
-# DATE:  2014/12/09
-# INFO:  Top-level CMakeLists.txt file for the marine/core project
-# NAME:  Maintained by Josh Leighton.  Original setup from 
-#        moos-ivp-extend and written my Mike Benjamin
+# FILE:  hover-kayak/code/core/CMakeLists.txt
+# DATE:  2018/06/14
+# INFO:  Top-level CMakeLists.txt file for the hover-kayak/core project
+# NAME:  Original setup from moos-ivp-extend and written by Mike Benjamin
 #===========================================================================
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
-PROJECT( IVP_EXTEND )
+PROJECT( HOVER_KAYAK )
 
 include(FindProtobuf)
 find_package(Protobuf REQUIRED)
@@ -84,7 +83,7 @@ FILE(GLOB IVP_LIBRARY_DIRS ${MOOSIVP_SOURCE_TREE_BASE}/lib )
 # Specify where to find MOOS's headers and libraries...
 #=============================================================================
 
-find_package(MOOS 10)
+find_package(MOOS 10.0)
 find_package(MOOSGeodesy)
 
 LINK_DIRECTORIES(       ${IVP_LIBRARY_DIRS}
