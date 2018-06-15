@@ -1,0 +1,6 @@
+*~
+bin
+lib
+include
+share
+core/src/protobuf
