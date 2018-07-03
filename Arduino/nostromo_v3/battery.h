@@ -93,9 +93,9 @@ public:
   
   
 private:
-  static const float okay_voltage = 11.7;
-  static const float low_voltage = 11.4;
-  static const float critical_voltage = 10.6;
+  static constexpr float okay_voltage = 11.7;
+  static constexpr float low_voltage = 11.4;
+  static constexpr float critical_voltage = 10.6;
   
   VoltageState m_state, next_state;
   

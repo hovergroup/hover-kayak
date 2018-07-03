@@ -5,6 +5,7 @@ ProcessConfig = pMarineViewer
     AppTick     = 4
 
   //TIFF_FILE     = ../../trunk/data/AerialMIT.tif
+    TIFF_FILE     = ../resources/data/AerialMIT-dark.tif
   
     center_view_true = true
   center_view_sticky = true

@@ -64,7 +64,7 @@ unsigned long command_timer_start = 0;
 // control
 int desired_thrust, desired_rudder;
 int thrust_limit = 1000;
-
+int thrust_lower_limit = 10;
 
 void loop() {
   sbus.doWork();
@@ -113,6 +113,11 @@ void loop() {
   if ( abs(current_angle) >= limitStartAngle ) {
     int turn_limit = (abs(current_angle)-limitStartAngle)*limitSlope + limitOffset;
     desired_thrust = constrain( desired_thrust, -1000+turn_limit, 1000-turn_limit );
+  }
+
+  // apply minimum limiting to reduce electronic noise
+  if (abs(desired_thrust)<thrust_lower_limit) {
+    desired_thrust = 0;
   }
   
   // send thrust command

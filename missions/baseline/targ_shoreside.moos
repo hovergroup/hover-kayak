@@ -1,0 +1,212 @@
+
+
+
+
+
+
+ServerHost = localhost
+ServerPort = 9000
+Community  = TERRA
+
+
+// MIT Sailing Pavilion
+LatOrigin  =  42.358456        
+LongOrigin = -71.087589    
+
+  
+//--------------------------------------------------------
+Processconfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB               @ NewConsole = false
+  Run = pShare               @ NewConsole = false
+  Run = pMarineViewer        @ NewConsole = false
+  Run = pLogger              @ NewConsole = false
+  Run = pProtoReportParser   @ NewConsole = false
+  Run = pWTStatusView        @ NewConsole = false
+  Run = pResourceMon         @ NewConsole = false
+  Run = uTermCommand_Hover   @ NewConsole = true
+  Run = pAckedCommsShoreside @ NewConsole = true
+
+  Run = pAcommsSimulator     @ NewConsole = true
+
+  1 = -geometry,80x30+0+0,-bg,lightgreen,-fg,brown
+  2 = -geometry,80x15+0+460,-bg,green,-fg,black
+}
+
+ProcessConfig = uTermCommand_Hover
+{
+    AppTick = 2
+    CommsTick = 2
+
+    // nostromo goto
+    CMD = NG --> MISSION_MODE_NOSTROMO --> GOTO
+    CMD = NG --> MOOS_MANUAL_OVERRIDE_NOSTROMO --> false
+    // nostromo station
+    CMD = NS --> MISSION_MODE_NOSTROMO --> STATION-KEEP
+    CMD = NS --> MOOS_MANUAL_OVERRIDE_NOSTROMO --> false
+    // nostromo all-stop
+    CMD = NA --> MISSION_MODE_NOSTROMO --> INACTIVE
+    CMD = NA --> MOOS_MANUAL_OVERRIDE_NOSTROMO --> true
+
+    // silvana goto
+    CMD = SG --> MISSION_MODE_SILVANA --> GOTO
+    CMD = SG --> MOOS_MANUAL_OVERRIDE_SILVANA --> false
+    // silvana station
+    CMD = SS --> MISSION_MODE_SILVANA --> STATION-KEEP
+    CMD = SS --> MOOS_MANUAL_OVERRIDE_SILVANA --> false
+    // silvana all-stop
+    CMD = SA --> MISSION_MODE_SILVANA --> INACTIVE
+    CMD = SA --> MOOS_MANUAL_OVERRIDE_SILVANA --> true
+
+    // kestrel goto
+    CMD = KG --> MISSION_MODE_KESTREL --> GOTO
+    CMD = KG --> MOOS_MANUAL_OVERRIDE_KESTREL --> false
+    // kestrel station
+    CMD = KS --> MISSION_MODE_KESTREL --> STATION-KEEP
+    CMD = KS --> MOOS_MANUAL_OVERRIDE_KESTREL --> false
+    // kestrel all-stop
+    CMD = KA --> MISSION_MODE_KESTREL --> INACTIVE
+    CMD = KA --> MOOS_MANUAL_OVERRIDE_KESTREL --> true
+    
+    // scheduled transmits
+    CMD = ENABLE_TRANSMITS --> SCHEDULED_TRANSMITS_ALL --> on
+    CMD = DISABLE_TRANSMITS --> SCHEDULED_TRANSMITS_ALL --> off
+}
+
+ProcessConfig = pShare
+{
+    IterateMode = 0    // regular iterate and mail
+    AppTick     = 4    // iterate lower bound
+  
+    output = ACKEDCOMMS_TRANSMIT_KESTREL->ACKEDCOMMS_TRANSMIT:localhost:9501
+    output = ACKEDCOMMS_TRANSMIT_SILVANA->ACKEDCOMMS_TRANSMIT:localhost:9401
+    output = ACKEDCOMMS_TRANSMIT_NOSTROMO->ACKEDCOMMS_TRANSMIT:localhost:9301
+    output = ACKEDCOMMS_TRANSMIT_ICARUS->ACKEDCOMMS_TRANSMIT:localhost:9201
+
+    output = APPCAST_REQ->APPCAST_REQ:localhost:9501
+    output = APPCAST_REQ->APPCAST_REQ:localhost:9401
+    output = APPCAST_REQ->APPCAST_REQ:localhost:9301
+    output = APPCAST_REQ->APPCAST_REQ:localhost:9201
+  
+    input = route=localhost:9001
+}
+
+ProcessConfig = pLogger
+{
+    IterateMode = 0    // regular iterate and mail
+    AppTick     = 10
+
+    File            = LOG_TERRA
+    PATH            = /home/mit/logs/
+    AsyncLog        = true
+    FileTimeStamp   = true
+    WildCardLogging = true
+
+    WildCardOmitPattern = PLOGGER_STATUS, DB_VARSUMMARY
+}
+
+//--------------------------------------------------------
+ProcessConfig = pMarineViewer
+{
+    IterateMode = 0    // regular iterate and mail
+    AppTick     = 4
+
+  //TIFF_FILE     = ../../trunk/data/AerialMIT.tif
+    TIFF_FILE     = ../resources/data/AerialMIT-dark.tif
+  
+    center_view_true = true
+  center_view_sticky = true
+
+  HASH_VIEW     = false
+  HASH_DELTA    = 100
+  HASH_SHADE    = 0.45
+  BACK_SHADE    = 0.70
+
+          trails_viewable = true
+        trails_point_size = 1
+       polygon_edge_color = white
+     polygon_vertex_color = light_green
+       polygon_edge_width = 1
+  polygon_viewable_labels = false
+  
+      seglist_vertex_size = 4
+        point_vertex_size = 8
+
+      vehicle_shape_scale = 3
+  vehicles_name_viewable = names
+                     zoom = 1.7
+                set_pan_x = 0
+                set_pan_y = 80
+
+    // Appcast configuration
+    appcast_height       = 75
+    appcast_width        = 30
+    appcast_viewable     = true
+    appcast_color_scheme = indigo
+    nodes_font_size      = medium
+    procs_font_size      = medium
+    appcast_font_size    = small
+
+
+    scope  = NODE_REPORT
+    scope  = VIEW_POINT
+    scope  = VIEW_SEGLIST
+    scope  = VIEW_POLYGON
+
+    ACTION = GOSTAY_NOSTROMO =true
+    ACTION = GOSTAY_NOSTROMO =false
+    ACTION = GOSTAY_SILVANA =true
+    ACTION = GOSTAY_SILVANA =false
+    ACTION = GOSTAY_KESTREL =true
+    ACTION = GOSTAY_KESTREL =false
+
+    right_context[nostromo] = GOTO_UPDATES_NOSTROMO= points=$(XPOS),$(YPOS)
+    right_context[silvana] = GOTO_UPDATES_SILVANA= points=$(XPOS),$(YPOS)
+    right_context[kestrel] = GOTO_UPDATES_KESTREL= points=$(XPOS),$(YPOS)
+
+    BUTTON_ONE   = DEPLOY  # MISSION_MODE_ALL = GOTO # MOOS_MANUAL_OVERRIDE_ALL = false
+    BUTTON_ONE	 = SET_NAV_SOURCE_ALL = RTK
+    BUTTON_TWO   = EXPERIMENT  # MISSION_MODE_ALL = EXPERIMENT # MOOS_MANUAL_OVERRIDE_ALL = false
+    BUTTON_TWO	 = SET_NAV_SOURCE_ALL = EXP
+    BUTTON_THREE = STATION # MISSION_MODE_ALL = STATION-KEEP # MOOS_MANUAL_OVERRIDE_ALL = false
+    BUTTON_THREE = SET_NAV_SOURCE_ALL = RTK
+    BUTTON_FOUR  = ALLSTOP # MISSION_MODE_ALL = INACTIVE # MOOS_MANUAL_OVERRIDE_ALL = true
+}
+
+ProcessConfig = pResourceMon
+{
+    IterateMode = 0 // regular iterate and mail
+    AppTick = 1
+}
+
+ProcessConfig = pAckedCommsShoreside
+{
+    IterateMode = 1    // comms driven iterate and mail
+    AppTick     = 20    // iterate lower bound
+    MaxAppTick  = 0    // no limit
+    
+    vehicles = NOSTROMO,SILVANA,KESTREL,ICARUS
+    
+    BRIDGE = var=MISSION_MODE,repeat=5,delay=0.5
+    BRIDGE = var=MOOS_MANUAL_OVERRIDE,repeat=5,delay=0.5
+    BRIDGE = var=GOTO_UPDATES,repeat=5,delay=0.5
+    BRIDGE = var=SCHEDULED_TRANSMITS,repeat=5,delay=0.5
+    BRIDGE = var=SET_NAV_SOURCE,repeat=5,delay=0.5
+}
+
+
+ProcessConfig = pAcommsSimulator
+{
+    IterateMode = 0    // regular iterate and mail
+    AppTick     = 20
+
+    sound_speed = 1450
+    p_partial_loss = 0.1
+    p_complete_loss = 0.1
+    p_sync_loss = 0.1
+    p_loss_per_frame = 0.5
+}
+
+
